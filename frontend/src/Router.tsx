@@ -48,7 +48,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> 
 const DefaultRedirect: React.FC = () => {
   const { isAuthenticated } = useAuthStore();
   
-  return <Navigate to={isAuthenticated ? "/dashboard" : "/public"} replace />;
+  return <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />;
 };
 
 const Router: React.FC = () => {

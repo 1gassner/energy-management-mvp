@@ -160,7 +160,7 @@ const BuergerDashboard: React.FC = () => {
           <p className="text-gray-600 mb-4">
             Kontaktieren Sie uns gerne für weitere Informationen
           </p>
-          <div className="flex justify-center space-x-8">
+          <div className="flex justify-center space-x-8 mb-6">
             <div>
               <p className="font-medium">📧 Email</p>
               <p className="text-sm text-gray-600">energie@hechingen.de</p>
@@ -169,6 +169,19 @@ const BuergerDashboard: React.FC = () => {
               <p className="font-medium">📞 Telefon</p>
               <p className="text-sm text-gray-600">07471 / 930-0</p>
             </div>
+          </div>
+          
+          {/* Staff Login Section */}
+          <div className="border-t border-gray-200 pt-6">
+            <p className="text-sm text-gray-500 mb-3">
+              Sind Sie Mitarbeiter der Stadtverwaltung?
+            </p>
+            <a 
+              href="/login"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              🔑 Zum Verwaltungsbereich
+            </a>
           </div>
         </div>
       </div>
