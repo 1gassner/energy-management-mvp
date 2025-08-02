@@ -1,0 +1,111 @@
+name: SSL Certificate Renewal
+
+on:
+  schedule:
+    # Run every Monday at 2 AM UTC
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+jobs:
+  renew-ssl:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install Certbot
+      run: |
+        sudo snap install core
+        sudo snap refresh core
+        sudo snap install --classic certbot
+        sudo ln -s /snap/bin/certbot /usr/bin/certbot
+
+    - name: Configure AWS credentials (for Route53 DNS challenge)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1
+
+    - name: Renew certificates
+      env:
+        DOMAIN: energy-management.your-domain.com
+        EMAIL: ${{ secrets.CERTBOT_EMAIL }}
+      run: |
+        sudo certbot certonly \
+          --dns-route53 \
+          --non-interactive \
+          --agree-tos \
+          --email $EMAIL \
+          -d $DOMAIN \
+          -d www.$DOMAIN
+
+    - name: Check certificate expiration
+      run: |
+        echo "Checking certificate expiration..."
+        openssl x509 -enddate -noout -in /etc/letsencrypt/live/${{ env.DOMAIN }}/cert.pem
+
+    - name: Copy certificates to repository (encrypted)
+      if: success()
+      run: |
+        # Encrypt certificates before storing
+        sudo tar -czf - -C /etc/letsencrypt/live/${{ env.DOMAIN }} . | \
+        openssl enc -aes-256-cbc -salt -out ssl-certs.tar.gz.enc -pass pass:${{ secrets.SSL_ENCRYPTION_KEY }}
+
+    - name: Upload encrypted certificates
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: ssl-certificates
+        path: ssl-certs.tar.gz.enc
+        retention-days: 90
+
+    - name: Deploy to server (if using self-hosting)
+      if: success() && env.DEPLOY_SERVER != ''
+      env:
+        DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
+        DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      run: |
+        # Setup SSH
+        mkdir -p ~/.ssh
+        echo "$DEPLOY_KEY" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        
+        # Copy certificates to server
+        scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+          /etc/letsencrypt/live/${{ env.DOMAIN }}/*.pem \
+          $DEPLOY_USER@$DEPLOY_SERVER:/path/to/ssl/
+        
+        # Restart services
+        ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+          $DEPLOY_USER@$DEPLOY_SERVER \
+          "docker-compose -f /path/to/docker-compose.production.yml restart frontend"
+
+    - name: Send notification
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: 'SSL Certificate Renewal: ${{ job.status }}'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  verify-ssl:
+    needs: renew-ssl
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+    - name: Check SSL configuration
+      run: |
+        # Check SSL Labs rating
+        curl -s "https://api.ssllabs.com/api/v3/analyze?host=energy-management.your-domain.com&publish=off&all=on" | \
+        jq -r '.endpoints[0].grade'
+        
+    - name: Verify security headers
+      run: |
+        # Check security headers
+        curl -I https://energy-management.your-domain.com | \
+        grep -E "(Strict-Transport-Security|X-Frame-Options|X-Content-Type-Options)"
