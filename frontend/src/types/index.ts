@@ -53,7 +53,7 @@ export interface Building {
 export interface Sensor {
   id: string;
   buildingId: string;
-  type: 'temperature' | 'humidity' | 'energy' | 'solar' | 'battery';
+  type: 'temperature' | 'humidity' | 'energy' | 'solar' | 'battery' | 'services' | 'traffic' | 'security' | 'education' | 'health' | 'environment';
   name: string;
   value: number;
   unit: string;

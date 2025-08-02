@@ -238,7 +238,7 @@ export const mockAlerts: Alert[] = [
     buildingId: 'rathaus-001',
     type: 'warning',
     title: 'Hohe Systemlast',
-    message: 'Die Systemlast liegt 20% über dem erwarteten Wert für diese Tageszeit.'
+    message: 'Die Systemlast liegt 20% über dem erwarteten Wert für diese Tageszeit.',
     timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
     isRead: true,
     isResolved: false,
@@ -250,7 +250,7 @@ export const mockAlerts: Alert[] = [
     buildingId: 'grundschule-001',
     type: 'info',
     title: 'Wartung geplant',
-    message: 'Die nächste planmäßige Wartung der IT-Systeme ist für nächste Woche geplant.'
+    message: 'Die nächste planmäßige Wartung der IT-Systeme ist für nächste Woche geplant.',
     timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
     isRead: false,
     isResolved: false,
@@ -262,7 +262,7 @@ export const mockAlerts: Alert[] = [
     buildingId: 'rathaus-001',
     type: 'error',
     title: 'Datenspeicher Kapazität niedrig',
-    message: 'Die Speicherkapazität ist unter 20% gefallen. Bitte prüfen Sie das System.'
+    message: 'Die Speicherkapazität ist unter 20% gefallen. Bitte prüfen Sie das System.',
     timestamp: new Date(Date.now() - 900000).toISOString(), // 15 minutes ago
     isRead: false,
     isResolved: false,
