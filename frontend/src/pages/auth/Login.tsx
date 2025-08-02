@@ -198,6 +198,16 @@ const Login: React.FC = () => {
               </Link>
             </p>
           </div>
+
+          {/* Demo Credentials Info */}
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h3 className="text-sm font-semibold text-gray-700 mb-2">Demo-Zugangsdaten:</h3>
+            <div className="space-y-1 text-sm text-gray-600">
+              <p>Admin: admin@citypulse.com / admin123</p>
+              <p>Manager: manager@citypulse.com / manager123</p>
+              <p>User: user@citypulse.com / user123</p>
+            </div>
+          </div>
         </div>
 
         {/* Public Dashboard Link */}
