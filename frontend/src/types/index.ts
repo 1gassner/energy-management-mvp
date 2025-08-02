@@ -42,23 +42,54 @@ export interface EnergyData {
 export interface Building {
   id: string;
   name: string;
-  type: 'rathaus' | 'grundschule' | 'realschule' | 'other';
+  type: 'rathaus' | 'grundschule' | 'realschule' | 'hallenbad' | 'werkrealschule' | 'gymnasium' | 'sporthallen' | 'other';
   address: string;
   capacity: number; // max kWh
   status: 'online' | 'offline' | 'maintenance';
   sensors: Sensor[];
   lastUpdate: string;
+  // Hechingen-specific properties
+  yearlyConsumption: number; // kWh per year
+  savingsPotential: {
+    kwh: number; // kWh savings potential
+    euro: number; // € savings potential per year
+    percentage: number; // percentage improvement
+  };
+  kwhPerSquareMeter: number; // efficiency metric
+  area: number; // building size in m²
+  // Special features for different building types
+  specialFeatures?: {
+    poolTemperature?: number; // for hallenbad (°C)
+    waterSurface?: number; // for hallenbad (m²)
+    poolHours?: string; // opening hours
+    occupancyRate?: number; // for schools
+    studentCount?: number; // for schools
+    renovationStatus?: 'none' | 'planned' | 'ongoing' | 'completed';
+    kfwStandard?: 'KfW-40' | 'KfW-55' | 'KfW-70' | 'none';
+    heritageProtection?: boolean; // for gymnasium
+    buildYear?: number;
+    lastRenovation?: number;
+    sportFacilities?: string[]; // for sporthallen
+  };
+  energyClass?: 'A+' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F';
 }
 
 export interface Sensor {
   id: string;
   buildingId: string;
-  type: 'temperature' | 'humidity' | 'energy' | 'solar' | 'battery' | 'services' | 'traffic' | 'security' | 'education' | 'health' | 'environment';
+  type: 'temperature' | 'humidity' | 'energy' | 'solar' | 'battery' | 'services' | 'traffic' | 'security' | 'education' | 'health' | 'environment' | 'pool' | 'pump' | 'occupancy' | 'sports' | 'water_quality' | 'visitors' | 'heritage' | 'renovation';
   name: string;
   value: number;
   unit: string;
   status: 'active' | 'inactive' | 'error';
   lastReading: string;
+  // Optional metadata for special sensors
+  metadata?: {
+    location?: string;
+    critical?: boolean;
+    alertThreshold?: number;
+    description?: string;
+  };
 }
 
 // Alert Types

@@ -23,20 +23,26 @@ const Dashboard: React.FC = () => {
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([
     {
       id: '1',
-      message: 'System online - All buildings connected',
+      message: 'Stadt Hechingen CityPulse - Alle 7 Gebäude online',
       timestamp: new Date().toISOString(),
       type: 'success'
     },
     {
       id: '2',
-      message: 'High consumption detected at Rathaus',
+      message: 'Hallenbad: Höchster Verbrauch (35% Gesamtverbrauch)',
       timestamp: new Date(Date.now() - 300000).toISOString(),
       type: 'warning'
     },
     {
       id: '3',
-      message: 'Weekly report generated',
+      message: 'Realschule KfW-55: Beste Effizienz erreicht',
       timestamp: new Date(Date.now() - 600000).toISOString(),
+      type: 'success'
+    },
+    {
+      id: '4',
+      message: 'European Energy Award Status aktiv',
+      timestamp: new Date(Date.now() - 900000).toISOString(),
       type: 'info'
     }
   ]);

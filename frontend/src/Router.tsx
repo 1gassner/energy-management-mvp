@@ -15,6 +15,11 @@ const BuergerDashboard = lazy(() => import('@/pages/public/BuergerDashboard'));
 const RathausDashboard = lazy(() => import('@/pages/buildings/RathausDashboard'));
 const RealschuleDashboard = lazy(() => import('@/pages/buildings/RealschuleDashboard'));
 const GrundschuleDashboard = lazy(() => import('@/pages/buildings/GrundschuleDashboard'));
+const HallenbadDashboard = lazy(() => import('@/pages/buildings/HallenbadDashboard'));
+const GymnasiumDashboard = lazy(() => import('@/pages/buildings/GymnasiumDashboard'));
+
+// Hechingen Overview
+const HechingenOverview = lazy(() => import('@/pages/dashboard/HechingenOverview'));
 
 // Alert Components
 const AlertsDashboard = lazy(() => import('@/pages/alerts/AlertsDashboard'));
@@ -95,6 +100,15 @@ const Router: React.FC = () => {
         </ProtectedRoute>
       } />
 
+      {/* Hechingen Overview */}
+      <Route path="/hechingen" element={
+        <ProtectedRoute>
+          <Suspense fallback={<LoadingSpinner />}>
+            <HechingenOverview />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+
       {/* Building Routes */}
       <Route path="/buildings/rathaus" element={
         <ProtectedRoute>
@@ -114,6 +128,20 @@ const Router: React.FC = () => {
         <ProtectedRoute>
           <Suspense fallback={<LoadingSpinner />}>
             <GrundschuleDashboard />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/buildings/hallenbad" element={
+        <ProtectedRoute>
+          <Suspense fallback={<LoadingSpinner />}>
+            <HallenbadDashboard />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/buildings/gymnasium" element={
+        <ProtectedRoute>
+          <Suspense fallback={<LoadingSpinner />}>
+            <GymnasiumDashboard />
           </Suspense>
         </ProtectedRoute>
       } />
