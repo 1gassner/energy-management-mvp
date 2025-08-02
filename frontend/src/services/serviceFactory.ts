@@ -16,10 +16,14 @@ class DefaultServiceFactory implements ServiceFactory {
   private loadMockConfig(): MockConfig {
     const useMockData = this.parseBooleanEnv(import.meta.env.VITE_USE_MOCK_DATA, true);
     const isDevelopment = import.meta.env.VITE_APP_ENV === 'development';
+    const hasApiUrl = import.meta.env.VITE_API_URL && !import.meta.env.VITE_API_URL.includes('your-domain.com');
+    
+    // Force mock mode if no valid API URL is provided
+    const shouldUseMock = useMockData || isDevelopment || !hasApiUrl;
     
     return {
-      useMockData: useMockData || isDevelopment,
-      mockDelay: parseInt(import.meta.env.VITE_MOCK_DELAY || '800', 10),
+      useMockData: shouldUseMock,
+      mockDelay: parseInt(import.meta.env.VITE_MOCK_DELAY || '500', 10),
       failureRate: parseFloat(import.meta.env.VITE_MOCK_FAILURE_RATE || '0'),
       webSocketEnabled: this.parseBooleanEnv(import.meta.env.VITE_WS_ENABLED, true),
     };
@@ -31,7 +35,7 @@ class DefaultServiceFactory implements ServiceFactory {
   }
 
   private logConfiguration(): void {
-    logger.info('Service Factory Configuration', {
+    const config = {
       useMockData: this.mockConfig.useMockData,
       mockDelay: this.mockConfig.mockDelay,
       failureRate: this.mockConfig.failureRate,
@@ -39,7 +43,16 @@ class DefaultServiceFactory implements ServiceFactory {
       environment: import.meta.env.VITE_APP_ENV,
       apiUrl: import.meta.env.VITE_API_URL,
       wsUrl: import.meta.env.VITE_WS_URL,
-    });
+      mode: this.mockConfig.useMockData ? 'MOCK MODE' : 'REAL API MODE',
+    };
+    
+    logger.info('🔧 Service Factory Configuration', config);
+    
+    if (this.mockConfig.useMockData) {
+      logger.info('✅ Using Mock Services - No real API calls will be made');
+    } else {
+      logger.warn('⚠️ Using Real API Services - Make sure API is available');
+    }
   }
 
   createAPIService(): IAPIService {

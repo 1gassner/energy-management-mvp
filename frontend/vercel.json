@@ -1,48 +1,41 @@
 {
-  "framework": null,
+  "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "installCommand": "npm install",
+  "installCommand": "npm ci",
+  "env": {
+    "VITE_USE_MOCK_DATA": "true",
+    "VITE_APP_ENV": "production",
+    "VITE_MOCK_DELAY": "500",
+    "VITE_MOCK_FAILURE_RATE": "0",
+    "VITE_WS_ENABLED": "true",
+    "VITE_LOG_LEVEL": "info",
+    "VITE_ENABLE_AI_FEATURES": "true",
+    "VITE_ENABLE_ANALYTICS": "false"
+  },
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
         {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
           "key": "X-Frame-Options",
           "value": "DENY"
         },
         {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
         },
         {
           "key": "Referrer-Policy",
           "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=()"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.energy-management.your-domain.com wss://api.energy-management.your-domain.com https://www.google-analytics.com; frame-ancestors 'none';"
         }
       ]
     }
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
-  ],
-  "regions": ["fra1"]
+  ]
 }
