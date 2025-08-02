@@ -23,10 +23,10 @@ const Header: React.FC = () => {
           <div className="flex items-center space-x-4">
             <Link to="/dashboard" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">EM</span>
+                <span className="text-white font-bold text-sm">CP</span>
               </div>
               <h1 className="text-xl font-semibold text-gray-900">
-                Energy Management
+                CityPulse
               </h1>
             </Link>
           </div>
@@ -43,7 +43,7 @@ const Header: React.FC = () => {
               to="/energy-flow" 
               className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
             >
-              Energy Flow
+              Stadt-Daten
             </Link>
             <Link 
               to="/buildings/rathaus" 

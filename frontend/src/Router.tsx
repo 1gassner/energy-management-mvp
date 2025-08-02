@@ -8,7 +8,7 @@ const Login = lazy(() => import('@/pages/auth/Login'));
 const Register = lazy(() => import('@/pages/auth/Register'));
 const Dashboard = lazy(() => import('@/pages/dashboard/Dashboard'));
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
-const EnergyFlowDashboard = lazy(() => import('@/pages/EnergyFlowDashboard'));
+const CityFlowDashboard = lazy(() => import('@/pages/EnergyFlowDashboard'));
 const BuergerDashboard = lazy(() => import('@/pages/public/BuergerDashboard'));
 
 // Building Dashboards
@@ -90,7 +90,7 @@ const Router: React.FC = () => {
       <Route path="/energy-flow" element={
         <ProtectedRoute>
           <Suspense fallback={<LoadingSpinner />}>
-            <EnergyFlowDashboard />
+            <CityFlowDashboard />
           </Suspense>
         </ProtectedRoute>
       } />

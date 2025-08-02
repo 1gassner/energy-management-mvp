@@ -1,16 +1,17 @@
-# Energy Management MVP Platform
+# CityPulse - Der digitale Puls deiner Stadt
 
-Eine moderne, React-basierte Plattform für das Management und Monitoring von Energiesystemen mit Echtzeit-Datenvisualisierung und intelligenten Analysen.
+Eine moderne, React-basierte Plattform für intelligente Verwaltung kommunaler Daten und Dienste mit Echtzeit-Datenvisualisierung und KI-gestützten Analysen.
 
 ## 🚀 Features
 
 ### Core Funktionalitäten
 - **Dashboard**: Zentrales Monitoring mit Echtzeit-Updates
-- **Energiefluss-Visualisierung**: Interaktive Charts und Diagramme
-- **Gebäude-Management**: Überwachung von Rathaus, Grundschule und Realschule
-- **Alert-System**: Automatische Benachrichtigungen bei Anomalien
-- **AI-Analytics**: Intelligente Datenanalyse und Vorhersagen
-- **Multi-User Support**: Rollenbasierte Zugriffskontrolle
+- **Stadt-Datenfluss**: Interaktive Visualisierung kommunaler Daten
+- **Gebäude-Management**: Überwachung von Rathaus, Schulen und öffentlichen Einrichtungen
+- **Alert-System**: Automatische Benachrichtigungen bei kritischen Ereignissen
+- **AI-Analytics**: Intelligente Datenanalyse und Vorhersagen für Stadtentwicklung
+- **Bürgerdienste**: Transparente Darstellung städtischer Leistungen
+- **Multi-User Support**: Rollenbasierte Zugriffskontrolle für Verwaltung und Bürger
 
 ### Technische Highlights
 - **Dual-Mode Architektur**: Mock-System für Development, Real-API für Production
@@ -53,7 +54,7 @@ Eine moderne, React-basierte Plattform für das Management und Monitoring von En
 ```bash
 # Repository klonen
 git clone [repository-url]
-cd Energy-Management-MVP/frontend
+cd CityPulse/frontend
 
 # Dependencies installieren
 npm install
@@ -72,8 +73,8 @@ VITE_API_URL=http://localhost:8000/api
 VITE_WS_URL=ws://localhost:8000/ws
 VITE_APP_ENV=development
 VITE_USE_MOCK_DATA=true
-VITE_SENTRY_DSN=your_sentry_dsn_here
-VITE_GOOGLE_ANALYTICS_ID=your_ga_id_here
+VITE_APP_NAME=CityPulse
+VITE_SUPPORT_EMAIL=support@citypulse.com
 ```
 
 ## 🔧 Development
@@ -310,10 +311,11 @@ npx tsc --noEmit
 ### API Endpoints (Real Mode)
 - `GET /api/auth/user` - User Profile
 - `POST /api/auth/login` - Authentication
-- `GET /api/energy/data` - Energy Data
-- `GET /api/buildings` - Building Information
-- `GET /api/alerts` - Active Alerts
-- `WebSocket /ws` - Real-time Updates
+- `GET /api/city/data` - Stadt-Daten
+- `GET /api/buildings` - Gebäude-Informationen
+- `GET /api/services` - Bürgerdienste
+- `GET /api/alerts` - Aktive Warnmeldungen
+- `WebSocket /ws` - Echtzeit-Updates
 
 ### Mock System (Development)
 Vollständiges Mock-System mit:
@@ -349,7 +351,7 @@ git push origin feature/new-feature
 
 ## 📄 License
 
-Copyright (c) 2024 Energy Management MVP. Alle Rechte vorbehalten.
+Copyright (c) 2024 CityPulse. Alle Rechte vorbehalten.
 
 ## 📞 Support
 
@@ -361,5 +363,5 @@ Bei Fragen oder Problemen:
 ---
 
 **Version**: 1.0.0  
-**Last Updated**: August 2024  
+**Last Updated**: August 2025  
 **Status**: Production Ready ✅

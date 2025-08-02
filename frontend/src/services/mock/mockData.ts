@@ -5,7 +5,7 @@ import { DashboardStats } from '@/types/api';
 export const mockUsers: User[] = [
   {
     id: '1',
-    email: 'admin@energy.com',
+    email: 'admin@citypulse.com',
     name: 'Administrator',
     role: 'admin',
     avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
@@ -14,8 +14,8 @@ export const mockUsers: User[] = [
   },
   {
     id: '2',
-    email: 'manager@energy.com',
-    name: 'Energy Manager',
+    email: 'manager@citypulse.com',
+    name: 'Stadt Manager',
     role: 'manager',
     avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face',
     createdAt: '2024-01-01T00:00:00Z',
@@ -23,8 +23,8 @@ export const mockUsers: User[] = [
   },
   {
     id: '3',
-    email: 'user@energy.com',
-    name: 'Facility User',
+    email: 'user@citypulse.com',
+    name: 'Bürger',
     role: 'user',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
     createdAt: '2024-01-01T00:00:00Z',
@@ -80,31 +80,31 @@ export const mockSensors: Sensor[] = [
     lastReading: new Date().toISOString(),
   },
   {
-    id: 'energy-rathaus-001',
+    id: 'services-rathaus-001',
     buildingId: 'rathaus-001',
-    type: 'energy',
-    name: 'Hauptstromzähler',
-    value: 45.2,
-    unit: 'kWh',
+    type: 'services',
+    name: 'Bürgerdienste Online',
+    value: 89.2,
+    unit: '%',
     status: 'active',
     lastReading: new Date().toISOString(),
   },
   {
-    id: 'solar-rathaus-001',
+    id: 'traffic-rathaus-001',
     buildingId: 'rathaus-001',
-    type: 'solar',
-    name: 'Solaranlage Dach',
-    value: 28.7,
-    unit: 'kWh',
+    type: 'traffic',
+    name: 'Verkehrsfluss Zentrum',
+    value: 73.5,
+    unit: '%',
     status: 'active',
     lastReading: new Date().toISOString(),
   },
   {
-    id: 'battery-rathaus-001',
+    id: 'security-rathaus-001',
     buildingId: 'rathaus-001',
-    type: 'battery',
-    name: 'Batteriespeicher',
-    value: 85.3,
+    type: 'security',
+    name: 'Sicherheitsstatus',
+    value: 96.1,
     unit: '%',
     status: 'active',
     lastReading: new Date().toISOString(),
@@ -121,22 +121,22 @@ export const mockSensors: Sensor[] = [
     lastReading: new Date().toISOString(),
   },
   {
-    id: 'energy-grundschule-001',
+    id: 'education-grundschule-001',
     buildingId: 'grundschule-001',
-    type: 'energy',
-    name: 'Schulgebäude Verbrauch',
-    value: 62.1,
-    unit: 'kWh',
+    type: 'education',
+    name: 'Bildungsqualität',
+    value: 92.3,
+    unit: '%',
     status: 'active',
     lastReading: new Date().toISOString(),
   },
   {
-    id: 'solar-grundschule-001',
+    id: 'health-grundschule-001',
     buildingId: 'grundschule-001',
-    type: 'solar',
-    name: 'Solar Turnhalle',
-    value: 35.4,
-    unit: 'kWh',
+    type: 'health',
+    name: 'Gesundheitsindex',
+    value: 88.7,
+    unit: '%',
     status: 'active',
     lastReading: new Date().toISOString(),
   },
@@ -152,12 +152,12 @@ export const mockSensors: Sensor[] = [
     lastReading: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
   },
   {
-    id: 'energy-realschule-001',
+    id: 'environment-realschule-001',
     buildingId: 'realschule-001',
-    type: 'energy',
-    name: 'Gesamtverbrauch',
-    value: 78.9,
-    unit: 'kWh',
+    type: 'environment',
+    name: 'Umweltqualität',
+    value: 85.4,
+    unit: '%',
     status: 'active',
     lastReading: new Date().toISOString(),
   },
@@ -237,8 +237,8 @@ export const mockAlerts: Alert[] = [
     id: 'alert-002',
     buildingId: 'rathaus-001',
     type: 'warning',
-    title: 'Hoher Energieverbrauch',
-    message: 'Der Energieverbrauch liegt 20% über dem erwarteten Wert für diese Tageszeit.',
+    title: 'Hohe Systemlast',
+    message: 'Die Systemlast liegt 20% über dem erwarteten Wert für diese Tageszeit.'
     timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
     isRead: true,
     isResolved: false,
@@ -250,7 +250,7 @@ export const mockAlerts: Alert[] = [
     buildingId: 'grundschule-001',
     type: 'info',
     title: 'Wartung geplant',
-    message: 'Die nächste planmäßige Wartung der Solaranlage ist für nächste Woche geplant.',
+    message: 'Die nächste planmäßige Wartung der IT-Systeme ist für nächste Woche geplant.'
     timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
     isRead: false,
     isResolved: false,
@@ -261,8 +261,8 @@ export const mockAlerts: Alert[] = [
     id: 'alert-004',
     buildingId: 'rathaus-001',
     type: 'error',
-    title: 'Batteriespeicher Kapazität niedrig',
-    message: 'Die Batterieladung ist unter 20% gefallen. Bitte prüfen Sie das System.',
+    title: 'Datenspeicher Kapazität niedrig',
+    message: 'Die Speicherkapazität ist unter 20% gefallen. Bitte prüfen Sie das System.'
     timestamp: new Date(Date.now() - 900000).toISOString(), // 15 minutes ago
     isRead: false,
     isResolved: false,
@@ -282,13 +282,13 @@ export const generateMockAnalytics = (period: 'day' | 'week' | 'month' | 'year')
   const predictions: PredictionData[] = [];
   const trends: TrendData[] = [
     {
-      label: 'Energieverbrauch',
+      label: 'Bürgerdienste',
       value: totalConsumption,
       change: -8.5,
       trend: 'down',
     },
     {
-      label: 'Energieproduktion',
+      label: 'Digitalisierung',
       value: totalProduction,
       change: 12.3,
       trend: 'up',
@@ -300,7 +300,7 @@ export const generateMockAnalytics = (period: 'day' | 'week' | 'month' | 'year')
       trend: 'up',
     },
     {
-      label: 'CO2 Einsparung',
+      label: 'Bürgerzufriedenheit',
       value: co2Reduction,
       change: 15.2,
       trend: 'up',
@@ -350,9 +350,9 @@ export const mockDashboardStats: DashboardStats = {
 
 // Authentication credentials for mock login
 export const mockCredentials = {
-  admin: { email: 'admin@energy.com', password: 'admin123' },
-  manager: { email: 'manager@energy.com', password: 'manager123' },
-  user: { email: 'user@energy.com', password: 'user123' },
+  admin: { email: 'admin@citypulse.com', password: 'admin123' },
+  manager: { email: 'manager@citypulse.com', password: 'manager123' },
+  user: { email: 'user@citypulse.com', password: 'user123' },
 };
 
 // Update sensors in buildings

@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { LazyLineChart } from '../components/charts';
 
-interface EnergyData {
+interface CityData {
   time: string;
   consumption: number;
   production: number;
   grid: number;
 }
 
-const EnergyFlowDashboard: React.FC = () => {
-  const [energyData, setEnergyData] = useState<EnergyData[]>([]);
+const CityFlowDashboard: React.FC = () => {
+  const [cityData, setCityData] = useState<CityData[]>([]);
   const [currentFlow, setCurrentFlow] = useState({
     production: 145.2,
     consumption: 98.7,
@@ -19,7 +19,7 @@ const EnergyFlowDashboard: React.FC = () => {
 
   useEffect(() => {
     // Generate mock data
-    const mockData: EnergyData[] = [];
+    const mockData: CityData[] = [];
     const now = new Date();
     
     for (let i = 23; i >= 0; i--) {
@@ -32,7 +32,7 @@ const EnergyFlowDashboard: React.FC = () => {
       });
     }
     
-    setEnergyData(mockData);
+    setCityData(mockData);
 
     // Simulate real-time updates
     const interval = setInterval(() => {
@@ -51,8 +51,8 @@ const EnergyFlowDashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Real-Time Energy Flow</h1>
-          <p className="text-gray-600 mt-2">Monitor energy production, consumption, and distribution</p>
+          <h1 className="text-3xl font-bold text-gray-900">Echtzeit Stadt-Datenfluss</h1>
+          <p className="text-gray-600 mt-2">Überwachen Sie Stadtdaten, Ressourcen und Dienstleistungen</p>
         </div>
 
         {/* Current Flow Status */}
@@ -60,8 +60,8 @@ const EnergyFlowDashboard: React.FC = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">PV Production</p>
-                <p className="text-2xl font-bold text-green-600">{currentFlow.production.toFixed(1)} kW</p>
+                <p className="text-sm text-gray-600">Bürgerdienste</p>
+                <p className="text-2xl font-bold text-green-600">{currentFlow.production.toFixed(0)}</p>
               </div>
               <div className="text-3xl">☀️</div>
             </div>
@@ -70,8 +70,8 @@ const EnergyFlowDashboard: React.FC = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Consumption</p>
-                <p className="text-2xl font-bold text-blue-600">{currentFlow.consumption.toFixed(1)} kW</p>
+                <p className="text-sm text-gray-600">Verkehrsfluss</p>
+                <p className="text-2xl font-bold text-blue-600">{currentFlow.consumption.toFixed(0)}%</p>
               </div>
               <div className="text-3xl">⚡</div>
             </div>
@@ -80,8 +80,8 @@ const EnergyFlowDashboard: React.FC = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Grid Feed-in</p>
-                <p className="text-2xl font-bold text-purple-600">{currentFlow.gridFeed.toFixed(1)} kW</p>
+                <p className="text-sm text-gray-600">Sicherheit</p>
+                <p className="text-2xl font-bold text-purple-600">{currentFlow.gridFeed.toFixed(0)}%</p>
               </div>
               <div className="text-3xl">🔌</div>
             </div>
@@ -90,8 +90,8 @@ const EnergyFlowDashboard: React.FC = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Battery</p>
-                <p className="text-2xl font-bold text-orange-600">{currentFlow.battery.toFixed(1)} kW</p>
+                <p className="text-sm text-gray-600">Umwelt</p>
+                <p className="text-2xl font-bold text-orange-600">{currentFlow.battery.toFixed(0)}%</p>
               </div>
               <div className="text-3xl">🔋</div>
             </div>
@@ -100,25 +100,25 @@ const EnergyFlowDashboard: React.FC = () => {
 
         {/* Energy Flow Diagram */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Energy Flow Visualization</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Stadt-Datenfluss Visualisierung</h2>
           
           <div className="flex justify-center items-center min-h-[300px]">
             <svg width="600" height="300" viewBox="0 0 600 300" className="w-full max-w-2xl">
               {/* PV Panels */}
               <rect x="50" y="50" width="80" height="40" fill="#10B981" rx="5" />
-              <text x="90" y="75" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">PV</text>
+              <text x="90" y="75" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">Services</text>
               
               {/* Building */}
               <rect x="260" y="120" width="80" height="60" fill="#3B82F6" rx="5" />
-              <text x="300" y="155" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">Building</text>
+              <text x="300" y="155" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">Rathaus</text>
               
               {/* Grid */}
               <rect x="470" y="50" width="80" height="40" fill="#8B5CF6" rx="5" />
-              <text x="510" y="75" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">Grid</text>
+              <text x="510" y="75" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">Stadt</text>
               
               {/* Battery */}
               <rect x="260" y="220" width="80" height="40" fill="#F59E0B" rx="5" />
-              <text x="300" y="245" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">Battery</text>
+              <text x="300" y="245" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">Datenbank</text>
               
               {/* Arrows with animation */}
               <defs>
@@ -147,13 +147,13 @@ const EnergyFlowDashboard: React.FC = () => {
 
         {/* Historical Chart */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">24-Hour Energy Trends</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">24-Stunden Stadt-Trends</h2>
           
-          <LazyLineChart data={energyData} height={300} />
+          <LazyLineChart data={cityData} height={300} />
         </div>
       </div>
     </div>
   );
 };
 
-export default EnergyFlowDashboard; 
+export default CityFlowDashboard; 
