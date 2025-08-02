@@ -107,11 +107,15 @@ class MockAPIService implements IAPIService {
     
     // Extract user ID from mock token (format: mock-jwt-token-{userId}-{timestamp})
     const tokenParts = token.split('-');
-    if (tokenParts.length < 4) {
+    if (tokenParts.length < 5) {
       throw new Error('Ungültiger Token');
     }
     
-    const userId = tokenParts[3]; // The user ID is at index 3
+    // The user ID is between 'token' and the timestamp
+    const userIdStartIndex = 3;
+    const timestampIndex = tokenParts.length - 1;
+    const userId = tokenParts.slice(userIdStartIndex, timestampIndex).join('-');
+    
     const user = mockUsers.find(u => u.id === userId);
     
     if (!user) {

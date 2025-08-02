@@ -12,6 +12,7 @@ interface AuthStore extends AuthState {
   refreshUser: () => Promise<void>;
   clearError: () => void;
   updateUser: (updates: Partial<User>) => void;
+  initialize: () => Promise<void>;
 }
 
 
@@ -136,6 +137,22 @@ export const useAuthStore = create<AuthStore>()(
             isLoading: false,
             error: null, // Don't show error on app initialization
           });
+        }
+      },
+
+      initialize: async () => {
+        // Initialize auth state on app startup
+        const token = localStorage.getItem('auth_token');
+        const persistedState = JSON.parse(localStorage.getItem('auth-storage') || '{}');
+        
+        if (token && persistedState.state?.user) {
+          // We have both token and persisted user, try to refresh
+          await get().refreshUser();
+        } else {
+          // Clear inconsistent state
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth-storage');
+          set({ user: null, isAuthenticated: false, isLoading: false, error: null });
         }
       },
 

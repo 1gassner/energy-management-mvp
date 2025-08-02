@@ -10,20 +10,20 @@ import { websocketService } from './services/websocket.service';
 import { logger } from './utils/logger';
 
 function App() {
-  const { user, isAuthenticated, refreshUser } = useAuthStore();
+  const { user, isAuthenticated, initialize } = useAuthStore();
 
   // Initialize user session on app start
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        await refreshUser();
+        await initialize();
       } catch (error) {
         logger.error('Failed to initialize user session', error as Error);
       }
     };
 
     initializeApp();
-  }, [refreshUser]);
+  }, [initialize]);
 
   // Manage WebSocket connection based on authentication
   useEffect(() => {
