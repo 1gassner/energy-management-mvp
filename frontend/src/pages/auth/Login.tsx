@@ -77,24 +77,14 @@ const Login: React.FC = () => {
         {/* Header */}
         <div className="text-center">
           <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
-            <span className="text-white font-bold text-xl">EM</span>
+            <span className="text-white font-bold text-xl">CP</span>
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Willkommen zurück
           </h2>
           <p className="text-gray-600">
-            Melden Sie sich in Ihrem Energy Management Account an
+            Melden Sie sich in Ihrem CityPulse Account an
           </p>
-        </div>
-
-        {/* Demo Credentials */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h4 className="text-sm font-medium text-blue-800 mb-2">Demo-Anmeldedaten:</h4>
-          <div className="text-xs text-blue-700 space-y-1">
-            <p><strong>Admin:</strong> admin@energy.com / admin123</p>
-            <p><strong>Manager:</strong> manager@energy.com / manager123</p>
-            <p><strong>User:</strong> user@energy.com / user123</p>
-          </div>
         </div>
 
         {/* Login Form */}
