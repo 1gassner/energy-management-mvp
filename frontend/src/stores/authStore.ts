@@ -113,7 +113,7 @@ export const useAuthStore = create<AuthStore>()(
       refreshUser: async () => {
         const token = localStorage.getItem('auth_token');
         if (!token) {
-          set({ user: null, isAuthenticated: false });
+          set({ user: null, isAuthenticated: false, isLoading: false, error: null });
           return;
         }
 
@@ -128,12 +128,13 @@ export const useAuthStore = create<AuthStore>()(
             error: null,
           });
         } catch (error) {
+          // Clear both localStorage and persisted state
           localStorage.removeItem('auth_token');
           set({
             user: null,
             isAuthenticated: false,
             isLoading: false,
-            error: 'Sitzung abgelaufen. Bitte melden Sie sich erneut an.',
+            error: null, // Don't show error on app initialization
           });
         }
       },

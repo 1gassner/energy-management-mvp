@@ -99,9 +99,21 @@ class MockAPIService implements IAPIService {
   async refreshUser(): Promise<User> {
     await this.simulateDelay(null);
     
-    // In a real app, you would validate the token and fetch fresh user data
-    // For mock, we'll simulate this by returning the first admin user
-    const user = mockUsers.find(u => u.role === 'admin');
+    // Get token from localStorage to identify the user
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      throw new Error('Kein gültiger Token gefunden');
+    }
+    
+    // Extract user ID from mock token (format: mock-jwt-token-{userId}-{timestamp})
+    const tokenParts = token.split('-');
+    if (tokenParts.length < 4) {
+      throw new Error('Ungültiger Token');
+    }
+    
+    const userId = tokenParts[3]; // The user ID is at index 3
+    const user = mockUsers.find(u => u.id === userId);
+    
     if (!user) {
       throw new Error('Benutzer nicht gefunden');
     }

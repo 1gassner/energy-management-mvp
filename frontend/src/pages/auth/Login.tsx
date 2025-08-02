@@ -92,7 +92,8 @@ const Login: React.FC = () => {
           <h4 className="text-sm font-medium text-blue-800 mb-2">Demo-Anmeldedaten:</h4>
           <div className="text-xs text-blue-700 space-y-1">
             <p><strong>Admin:</strong> admin@energy.com / admin123</p>
-            <p><strong>Manager:</strong> user@energy.com / user123</p>
+            <p><strong>Manager:</strong> manager@energy.com / manager123</p>
+            <p><strong>User:</strong> user@energy.com / user123</p>
           </div>
         </div>
 
