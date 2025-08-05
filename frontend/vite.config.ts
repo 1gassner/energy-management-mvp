@@ -32,13 +32,34 @@ export default defineConfig({
     emptyOutDir: true, // Force clean build
     rollupOptions: {
       output: {
-        // DISABLE ALL CODE SPLITTING - Single bundle only
-        manualChunks: undefined, // Disable manual chunks
-        // Single file names with more aggressive cache busting
-        chunkFileNames: (chunkInfo) => {
-          return `assets/js/${chunkInfo.name}-[hash].js`;
+        // OPTIMIZED CODE SPLITTING for better performance
+        manualChunks: (id) => {
+          // Vendor splitting for better caching
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('recharts')) {
+              return 'charts';
+            }
+            if (id.includes('lucide-react')) {
+              return 'icons';
+            }
+            if (id.includes('zustand')) {
+              return 'state';
+            }
+            return 'vendor';
+          }
+          // Split by feature
+          if (id.includes('src/pages/buildings')) {
+            return 'buildings';
+          }
+          if (id.includes('src/pages/analytics')) {
+            return 'analytics';
+          }
         },
-        entryFileNames: `assets/js/index-[hash].js`,
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name!.split('.');
           const ext = info[info.length - 1];
@@ -46,12 +67,10 @@ export default defineConfig({
             return `assets/img/[name]-[hash].[ext]`;
           }
           if (ext === 'css') {
-            return `assets/css/style-[hash].[ext]`;
+            return `assets/css/[name]-[hash].[ext]`;
           }
           return `assets/[ext]/[name]-[hash].[ext]`;
-        },
-        // Disable dynamic imports
-        inlineDynamicImports: true
+        }
       }
     },
     target: 'es2020',

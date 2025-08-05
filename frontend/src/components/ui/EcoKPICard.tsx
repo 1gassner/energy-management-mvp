@@ -176,4 +176,6 @@ const EcoKPICard: React.FC<EcoKPICardProps> = ({
   );
 };
 
+EcoKPICard.displayName = 'EcoKPICard';
+
 export default EcoKPICard;
