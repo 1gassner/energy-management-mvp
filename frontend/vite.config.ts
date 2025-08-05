@@ -38,15 +38,9 @@ export default defineConfig({
             return 'vendor-react';
           }
           
-          // Charts - split recharts into smaller chunks
+          // Charts - keep recharts together to prevent module loading issues
           if (id.includes('recharts')) {
-            // Split recharts by component type
-            if (id.includes('LineChart') || id.includes('Line')) return 'charts-line';
-            if (id.includes('BarChart') || id.includes('Bar')) return 'charts-bar';
-            if (id.includes('PieChart') || id.includes('Pie')) return 'charts-pie';
-            if (id.includes('CartesianGrid') || id.includes('XAxis') || id.includes('YAxis')) return 'charts-axis';
-            if (id.includes('Tooltip') || id.includes('Legend')) return 'charts-tooltip';
-            return 'charts-core';
+            return 'vendor-recharts'; // Single chunk for all recharts to fix PureComponent error
           }
           
           // UI libraries
@@ -111,22 +105,21 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    // Pre-bundle only critical dependencies
+    // Pre-bundle critical dependencies INCLUDING recharts to fix PureComponent error
     include: [
       'react',
       'react-dom',
       'react-dom/client',
       'react-router-dom',
+      'recharts',  // MUST be included to prevent module loading issues
       'zustand',
       'clsx',
-      'tailwind-merge'
-    ],
-    // Exclude heavy libraries for dynamic loading
-    exclude: [
-      'recharts',
+      'tailwind-merge',
       'react-hot-toast',
       'lucide-react'
     ],
+    // Don't exclude anything critical
+    exclude: [],
     // Enable aggressive optimization
     esbuildOptions: {
       target: 'es2020',
