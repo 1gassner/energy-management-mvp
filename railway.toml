@@ -1,16 +1,11 @@
 [build]
-builder = "nixpacks"
-buildCommand = "cd backend && npm ci --only=production"
+builder = "dockerfile"
 
 [deploy]
-startCommand = "cd backend && npm start"
 healthcheckPath = "/health"  
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
-
-[nixpacks]
-configFile = "nixpacks.toml"
 
 [environments.production]
 variables = {
