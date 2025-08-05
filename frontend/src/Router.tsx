@@ -232,13 +232,11 @@ const Router: React.FC = () => {
         </ProtectedRoute>
       } />
 
-      {/* Analytics Routes */}
+      {/* Analytics Routes - Public Access */}
       <Route path="/analytics" element={
-        <ProtectedRoute roles={['admin', 'buergermeister', 'manager', 'gebaeudemanager']} requirePermission={Permission.VIEW_DETAILED_ANALYTICS}>
-          <Suspense fallback={<LoadingSpinner />}>
-            <AdvancedAnalyticsDashboard />
-          </Suspense>
-        </ProtectedRoute>
+        <Suspense fallback={<LoadingSpinner />}>
+          <AdvancedAnalyticsDashboard />
+        </Suspense>
       } />
       <Route path="/analytics/ai" element={
         <ProtectedRoute>
