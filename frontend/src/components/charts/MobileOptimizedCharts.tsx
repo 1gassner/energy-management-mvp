@@ -3,7 +3,7 @@ import React, { Suspense, lazy, memo, useMemo, useCallback, useState, useEffect 
 // Mobile-specific chart loader with responsive breakpoints
 const createMobileChartComponent = (chartType: string) => lazy(() => 
   import('recharts').then(module => ({
-    default: memo(function MobileOptimizedChart({ 
+    default: React.memo(function MobileOptimizedChart({ 
       data, 
       height, 
       config: _config,

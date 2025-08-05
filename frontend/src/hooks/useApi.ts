@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { enhancedApiService, LoadingState, ApiError, NetworkError, TimeoutError, RateLimitError } from '@/services/api/enhancedApiService';
+import { enhancedApiService, ApiError, NetworkError, TimeoutError, RateLimitError } from '@/services/api/enhancedApiService';
 import { logger } from '@/utils/logger';
 
 // Base API Hook Interface

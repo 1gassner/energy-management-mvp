@@ -4,7 +4,7 @@ import LoadingSpinner from '../ui/LoadingSpinner';
 // Optimized chart loader with better error handling
 const createChartComponent = (chartType: string) => lazy(() => 
   import('recharts').then(module => ({
-    default: memo(function OptimizedChart({ 
+    default: React.memo(function OptimizedChart({ 
       data, 
       height, 
       config,
