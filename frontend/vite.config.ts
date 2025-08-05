@@ -31,28 +31,31 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        // Simplified chunking strategy to avoid dynamic import issues
-        manualChunks: {
-          // Core vendor chunks - always loaded
-          'vendor': [
-            'react',
-            'react-dom',
-            'react-router-dom'
-          ],
-          // Charts library - separate bundle
-          'charts': [
-            'recharts'
-          ],
-          // UI utilities
-          'ui': [
-            'lucide-react',
-            'clsx',
-            'tailwind-merge'
-          ],
-          // State management
-          'state': [
-            'zustand'
-          ]
+        // Fixed chunking to prevent React hook errors
+        manualChunks(id) {
+          // CRITICAL: React must be in vendor chunk and loaded first
+          if (id.includes('node_modules')) {
+            if (id.includes('react-dom')) {
+              return 'react-dom';
+            }
+            if (id.includes('react') && !id.includes('recharts')) {
+              return 'react';
+            }
+            if (id.includes('recharts')) {
+              return 'charts';
+            }
+            if (id.includes('lucide-react')) {
+              return 'icons';
+            }
+            if (id.includes('zustand')) {
+              return 'state';
+            }
+            if (id.includes('react-router')) {
+              return 'router';
+            }
+            // All other node_modules in vendor
+            return 'vendor';
+          }
         },
         // Optimize chunk and asset names
         chunkFileNames: 'assets/js/[name]-[hash].js',
