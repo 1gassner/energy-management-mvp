@@ -570,4 +570,117 @@ describe('WebSocketService', () => {
       )
     })
   })
+
+  describe('Memory Leak Prevention', () => {
+    it('should properly cleanup on destroy', async () => {
+      websocketService.connect()
+      await act(async () => {
+        await vi.runOnlyPendingTimersAsync()
+      })
+      
+      const callback = vi.fn()
+      const subscriptionId = websocketService.subscribe('test-type', callback)
+      const connectionUnsubscribe = websocketService.onConnectionChange(() => {})
+      
+      expect(websocketService.isConnected).toBe(true)
+      expect(subscriptionId).toBeTruthy()
+      
+      // Destroy the service (Mock service has destroy method)
+      if (websocketService.destroy) {
+        websocketService.destroy()
+      }
+      
+      // Verify service is destroyed and cleaned up
+      expect(websocketService.isConnected).toBe(false)
+      expect(websocketService.connectionState).toBe('disconnected')
+      
+      // Attempt operations after destroy should be no-ops
+      const newSubId = websocketService.subscribe('another-type', vi.fn())
+      expect(newSubId).toBe('')
+      
+      const newConnectionListener = websocketService.onConnectionChange(vi.fn())
+      expect(typeof newConnectionListener).toBe('function') // Should return cleanup function
+    })
+
+    it('should prevent operations when destroyed', () => {
+      if (websocketService.destroy) {
+        websocketService.destroy()
+      }
+      
+      // All operations should be no-ops or return empty/false values
+      websocketService.connect()
+      expect(websocketService.isConnected).toBe(false)
+      
+      const subId = websocketService.subscribe('test', vi.fn())
+      expect(subId).toBe('')
+      
+      websocketService.send({ 
+        type: 'test' as any, 
+        payload: {}, 
+        timestamp: new Date().toISOString() 
+      })
+      
+      // Should not crash and should log warnings
+      expect(mockLogger.warn).toHaveBeenCalled()
+    })
+
+    it('should cleanup timers and intervals properly', async () => {
+      websocketService.connect()
+      await act(async () => {
+        await vi.runOnlyPendingTimersAsync()
+      })
+      
+      expect(websocketService.isConnected).toBe(true)
+      
+      // Disconnect should clear all timers
+      websocketService.disconnect()
+      
+      expect(websocketService.isConnected).toBe(false)
+      expect(websocketService.connectionState).toBe('disconnected')
+      
+      // Verify cleanup was logged
+      expect(mockLogger.info).toHaveBeenCalledWith('Mock WebSocket disconnected and cleaned up')
+    })
+
+    it('should handle subscription cleanup', async () => {
+      websocketService.connect()
+      await act(async () => {
+        await vi.runOnlyPendingTimersAsync()
+      })
+      
+      const callback = vi.fn()
+      const subscriptionId = websocketService.subscribe('test-type', callback)
+      
+      // Verify subscription was created
+      expect(subscriptionId).toContain('mock_test-type')
+      
+      // Cleanup subscriptions on disconnect
+      websocketService.disconnect()
+      
+      // Internal subscriptions should be cleared (testing implementation detail)
+      expect((websocketService as any).subscriptions.length).toBe(0)
+    })
+
+    it('should handle connection listener errors gracefully during cleanup', async () => {
+      const errorListener = vi.fn(() => {
+        throw new Error('Listener error')
+      })
+      
+      websocketService.onConnectionChange(errorListener)
+      
+      // Connect to trigger listener notification
+      websocketService.connect()
+      
+      // Should not throw during disconnect
+      expect(() => {
+        websocketService.disconnect()
+      }).not.toThrow()
+      
+      // Should have logged the error (both during connect and disconnect)
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Error in mock connection listener',
+        expect.any(Error)
+      )
+    })
+  })
 })

@@ -146,6 +146,7 @@ const Login: React.FC = () => {
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isLoading}
+                  tabIndex={-1}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
@@ -193,9 +194,12 @@ const Login: React.FC = () => {
           <div className="mt-6 p-4 bg-blue-50 rounded-lg">
             <h3 className="text-sm font-semibold text-gray-700 mb-2">Demo-Zugangsdaten:</h3>
             <div className="space-y-1 text-sm text-gray-600">
-              <p>Admin: admin@citypulse.com / admin123</p>
-              <p>Manager: manager@citypulse.com / manager123</p>
-              <p>User: user@citypulse.com / user123</p>
+              <p><strong>Admin:</strong> admin@citypulse.com / admin123</p>
+              <p><strong>Manager:</strong> manager@citypulse.com / manager123</p>
+              <p><strong>User:</strong> user@citypulse.com / user123</p>
+              <p><strong>Bürgermeister:</strong> buergermeister@citypulse.com / citypulse123</p>
+              <p><strong>Gebäudemanager:</strong> gebaeude.manager@citypulse.com / citypulse123</p>
+              <p><strong>Bürger:</strong> buerger@citypulse.com / citypulse123</p>
             </div>
           </div>
         </div>

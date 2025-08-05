@@ -1,0 +1,167 @@
+# Alert rules for FlowMind Universal Backend
+
+groups:
+  - name: flowmind-backend-alerts
+    rules:
+      # High-priority alerts
+      - alert: BackendDown
+        expr: up{job="flowmind-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "FlowMind Backend is down"
+          description: "Backend service has been down for more than 1 minute"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} for the last 5 minutes"
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }}s"
+
+      # Resource alerts
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: LowDiskSpace
+        expr: (1 - node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space detected"
+          description: "Disk usage is {{ $value }}% on {{ $labels.instance }}"
+
+      # Database alerts
+      - alert: DatabaseConnectionIssue
+        expr: postgres_up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection issue"
+          description: "Cannot connect to PostgreSQL database"
+
+      - alert: HighDatabaseConnections
+        expr: postgres_stat_database_numbackends / postgres_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High database connection usage"
+          description: "Database connections at {{ $value | humanizePercentage }} of maximum"
+
+      # Redis alerts
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis service is not responding"
+
+      - alert: HighRedisMemoryUsage
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Redis memory usage"
+          description: "Redis memory usage is {{ $value | humanizePercentage }}"
+
+      # WebSocket alerts
+      - alert: HighWebSocketErrors
+        expr: rate(websocket_connection_errors_total[5m]) > 0.1
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High WebSocket error rate"
+          description: "WebSocket error rate is {{ $value }} errors per second"
+
+      - alert: TooManyWebSocketConnections
+        expr: websocket_active_connections > 10000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High number of WebSocket connections"
+          description: "{{ $value }} active WebSocket connections"
+
+      # Frontend-specific alerts
+      - alert: FrontendDown
+        expr: up{job=~"frontend-.*"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Frontend {{ $labels.job }} is down"
+          description: "Frontend service {{ $labels.job }} has been down for more than 2 minutes"
+
+      # Business logic alerts
+      - alert: LowUserActivity
+        expr: rate(http_requests_total{endpoint="/api/v1/auth/login"}[1h]) < 0.01
+        for: 30m
+        labels:
+          severity: info
+        annotations:
+          summary: "Low user activity detected"
+          description: "Login rate is {{ $value }} per second over the last hour"
+
+      - alert: HighAuthenticationFailures
+        expr: rate(http_requests_total{endpoint="/api/v1/auth/login", status="401"}[5m]) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High authentication failure rate"
+          description: "Authentication failure rate is {{ $value }} per second"
+
+  - name: business-metrics-alerts
+    rules:
+      # SLA alerts
+      - alert: UptimeSLABreached
+        expr: avg_over_time(up{job="flowmind-backend"}[24h]) < 0.999
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Uptime SLA breached"
+          description: "24-hour uptime is {{ $value | humanizePercentage }}, below 99.9% SLA"
+
+      - alert: ResponseTimeSLABreached
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[24h])) > 0.1
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Response time SLA breached"
+          description: "24-hour 95th percentile response time is {{ $value }}s, above 100ms SLA"

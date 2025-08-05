@@ -1,418 +1,328 @@
 import React, { useState, useEffect } from 'react';
 import { serviceFactory } from '@/services/serviceFactory';
-import { Building, Sensor, EnergyData } from '@/types';
-import DashboardCard from '@/components/ui/DashboardCard';
+import { Sensor } from '@/types';
+import { LazyLineChart, LazyBarChart } from '../../components/charts';
+import EcoCard from '@/components/ui/EcoCard';
+import EcoKPICard from '@/components/ui/EcoKPICard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { 
   GraduationCap, 
-  Calendar, 
-  Shield, 
-  Thermometer, 
   Users, 
-  Zap,
+  Zap, 
+  DollarSign, 
+  Leaf, 
+  Sun, 
   TrendingUp,
-  BookOpen,
   AlertTriangle,
-  Crown,
-  Building as BuildingIcon,
-  Clock
+  CheckCircle,
+  Activity,
+  Clock,
+  BookOpen,
+  Heart,
+  Target,
+  Trophy
 } from 'lucide-react';
 
 const GymnasiumDashboard: React.FC = () => {
-  const [building, setBuilding] = useState<Building | null>(null);
-  const [sensors, setSensors] = useState<Sensor[]>([]);
-  const [energyData, setEnergyData] = useState<EnergyData[]>([]);
+  const [, setSensors] = useState<Sensor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const apiService = serviceFactory.createAPIService();
+
+  // School-specific KPIs
+  const [schoolKpis, setSchoolKpis] = useState({
+    energyIntensity: 86.2,
+    co2Emissions: 21.4,
+    pvSelfConsumption: 74.8,
+    peakLoad: 78.3,
+    energyCosts: 1245.80,
+    studentCount: 850,
+    teacherCount: 65,
+    sportActivities: 45,
+    classroomUtilization: 94.2
+  });
+
+  const [energyDataMock] = useState([
+    { time: '00:00', consumption: 25, production: 0, grid: 25, temperature: 19 },
+    { time: '06:00', consumption: 40, production: 8, grid: 32, temperature: 20 },
+    { time: '12:00', consumption: 85, production: 95, grid: -10, temperature: 24 },
+    { time: '18:00', consumption: 55, production: 30, grid: 25, temperature: 23 },
+    { time: '24:00', consumption: 30, production: 0, grid: 30, temperature: 21 }
+  ]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        // Fetch building data
-        const buildingData = await apiService.getBuilding('gymnasium-hechingen');
-        setBuilding(buildingData);
+        const [sensorsData] = await Promise.all([
+          apiService.getSensors('gymnasium')
+        ]);
         
-        // Fetch sensors
-        const sensorsData = await apiService.getSensors('gymnasium-hechingen');
-        setSensors(sensorsData);
+        setSensors(sensorsData || []);
         
-        // Fetch energy data
-        const energyDataResponse = await apiService.getEnergyData('gymnasium-hechingen', '7d');
-        setEnergyData(energyDataResponse);
-        
+        // Update KPIs with animation
+        const interval = setInterval(() => {
+          setSchoolKpis(prev => ({
+            ...prev,
+            energyIntensity: prev.energyIntensity + (Math.random() - 0.5) * 2,
+            co2Emissions: prev.co2Emissions + (Math.random() - 0.5) * 0.8,
+            pvSelfConsumption: Math.max(0, Math.min(100, prev.pvSelfConsumption + (Math.random() - 0.5) * 3)),
+          }));
+        }, 5000);
+
+        return () => clearInterval(interval);
       } catch (err) {
-        setError('Fehler beim Laden der Gymnasium-Daten');
-        console.error('Error fetching gymnasium data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load data');
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [apiService]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <LoadingSpinner size="lg" text="Lade Gymnasium-Daten..." />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            Fehler beim Laden
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!building) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-gray-600 dark:text-gray-400">Gymnasium nicht gefunden</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Get specific sensor values
-  const energySensor = sensors.find(s => s.type === 'energy');
-  const heritageSensor = sensors.find(s => s.type === 'heritage');
-  const educationSensor = sensors.find(s => s.type === 'education');
-  const tempSensor = sensors.find(s => s.type === 'temperature');
-
-  // Calculate age and heritage value
-  const currentYear = new Date().getFullYear();
-  const buildingAge = currentYear - (building.specialFeatures?.buildYear || 1909);
-  const lastRenovationYearsAgo = currentYear - (building.specialFeatures?.lastRenovation || 2005);
+  if (loading) return <LoadingSpinner />;
+  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-              <GraduationCap className="w-8 h-8 text-purple-600" />
-              {building.name}
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">{building.address}</p>
-            <div className="flex items-center gap-4 mt-3">
-              <Crown className="w-4 h-4 text-yellow-500" />
-              <span className="text-sm font-medium text-yellow-600">
-                HISTORISCHES GEBÄUDE - DENKMALSCHUTZ SEIT 1909
-              </span>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-500">Energieklasse</div>
-            <div className={`text-2xl font-bold ${
-              building.energyClass === 'C' ? 'text-orange-600' : 'text-green-600'
-            }`}>
-              {building.energyClass}
-            </div>
-            <div className="text-sm text-gray-500 mt-1">
-              Baujahr: {building.specialFeatures?.buildYear}
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-950 relative">
+      {/* Eco Dark Background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-green-500/5 to-teal-500/5" />
         </div>
       </div>
-
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <DashboardCard
-          title="Stromverbrauch"
-          value={energySensor?.value || 0}
-          unit="kWh"
-          icon={<Zap className="w-6 h-6" />}
-          trend={{
-            value: 5.2,
-            isPositive: false
-          }}
-          color="blue"
-        />
-        
-        <DashboardCard
-          title="Schüleranzahl"
-          value={educationSensor?.value || 0}
-          unit="Schüler"
-          icon={<Users className="w-6 h-6" />}
-          trend={{
-            value: 2.1,
-            isPositive: true
-          }}
-          color="green"
-        />
-        
-        <DashboardCard
-          title="Gebäudetemperatur"
-          value={tempSensor?.value || 0}
-          unit="°C"
-          icon={<Thermometer className="w-6 h-6" />}
-          color="orange"
-        />
-        
-        <DashboardCard
-          title="Denkmalschutz"
-          value={heritageSensor?.value || 0}
-          unit="%"
-          icon={<Shield className="w-6 h-6" />}
-          color="purple"
-        />
-      </div>
-
-      {/* Heritage Protection & History */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-purple-600" />
-            Denkmalschutz Status
-          </h3>
-          <div className="space-y-4">
-            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <Crown className="w-4 h-4 text-yellow-500" />
-                <span className="font-semibold text-purple-900 dark:text-purple-100">
-                  Geschütztes Baudenkmal
-                </span>
-              </div>
-              <p className="text-sm text-purple-700 dark:text-purple-300">
-                Das Gymnasium steht seit seiner Erbauung 1909 unter Denkmalschutz und ist ein 
-                bedeutendes Beispiel wilhelminischer Schularchitektur.
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">{buildingAge}</div>
-                <div className="text-xs text-gray-500">Jahre alt</div>
-              </div>
-              <div className="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div className="text-2xl font-bold text-orange-600">{lastRenovationYearsAgo}</div>
-                <div className="text-xs text-gray-500">Jahre seit Renovierung</div>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <h4 className="font-medium text-gray-900 dark:text-white">Denkmalschutz-Auflagen</h4>
-              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                <li>• Fassade darf nicht verändert werden</li>
-                <li>• Fenster nur denkmalgerecht erneuern</li>
-                <li>• Dämmung nur von innen möglich</li>
-                <li>• Heizungssystem begrenzt modernisierbar</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-blue-600" />
-            Historische Entwicklung
-          </h3>
-          <div className="space-y-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <span className="text-sm font-medium">Erbauung</span>
-                <span className="text-blue-600 font-bold">1909</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <span className="text-sm font-medium">Letzte Renovierung</span>
-                <span className="text-green-600 font-bold">2005</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                <span className="text-sm font-medium">Nächste Renovierung</span>
-                <span className="text-orange-600 font-bold">2025 (geplant)</span>
-              </div>
-            </div>
-            
-            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-              <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">
-                Geplante Maßnahmen 2025
-              </h4>
-              <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-                <li>• Denkmalgerechte Fenstersanierung</li>
-                <li>• Innendämmung (soweit möglich)</li>
-                <li>• Heizungsoptimierung</li>
-                <li>• LED-Beleuchtung in Klassenräumen</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Energy Efficiency & Limitations */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-orange-600" />
-          Energieeffizienz & Denkmalschutz-Grenzen
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-orange-600">
-              {building.yearlyConsumption.toLocaleString()}
-            </div>
-            <div className="text-sm text-orange-700 dark:text-orange-300">kWh/Jahr Verbrauch</div>
-            <div className="text-xs text-gray-500 mt-1">Begrenzt durch Denkmalschutz</div>
-          </div>
-          <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-yellow-600">
-              {building.kwhPerSquareMeter}
-            </div>
-            <div className="text-sm text-yellow-700 dark:text-yellow-300">kWh/m² Effizienz</div>
-            <div className="text-xs text-gray-500 mt-1">Historisches Gebäude</div>
-          </div>
-          <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-green-600">
-              {building.savingsPotential.percentage}%
-            </div>
-            <div className="text-sm text-green-700 dark:text-green-300">Einsparpotential</div>
-            <div className="text-xs text-gray-500 mt-1">Trotz Auflagen möglich</div>
-          </div>
-        </div>
-        
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
-            <h4 className="font-semibold text-red-800 dark:text-red-200 mb-2">
-              Denkmalschutz-Beschränkungen
-            </h4>
-            <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
-              <li>• Keine Außendämmung möglich</li>
-              <li>• Fenster nur denkmalgerecht</li>
-              <li>• Fassade muss originalgetreu bleiben</li>
-              <li>• Dachform nicht veränderbar</li>
-            </ul>
-          </div>
-          <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-            <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">
-              Mögliche Optimierungen
-            </h4>
-            <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
-              <li>• Innendämmung: -8% Verbrauch</li>
-              <li>• Heizungsoptimierung: -5% Verbrauch</li>
-              <li>• LED-Beleuchtung: -3% Verbrauch</li>
-              <li>• Smart Building System: -2% Verbrauch</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Educational Statistics */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-green-600" />
-            Schulbetrieb
-          </h3>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">
-                  {building.specialFeatures?.studentCount}
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Modern Education Header Card */}
+        <EcoCard variant="glass" size="lg" className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-4 mb-3">
+                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-lg">
+                  <GraduationCap className="w-12 h-12 text-white" />
                 </div>
-                <div className="text-xs text-gray-500">Schüler</div>
+                <div>
+                  <h1 className="text-5xl font-bold bg-gradient-to-r from-emerald-300 via-green-300 to-teal-300 bg-clip-text text-transparent mb-2">
+                    Gymnasium Hechingen
+                  </h1>
+                  <p className="text-slate-300 text-xl font-medium">
+                    Historisches Gymnasium • Baujahr: 1909 • Bildungsexzellenz
+                  </p>
+                  <p className="text-slate-400 text-lg mt-1">
+                    8,500 m² • {schoolKpis.studentCount} Schüler • {schoolKpis.teacherCount} Lehrkräfte
+                  </p>
+                </div>
               </div>
-              <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">45</div>
-                <div className="text-xs text-gray-500">Klassen</div>
+              <div className="flex items-center gap-4 mt-6">
+                <div className="px-5 py-3 bg-yellow-500/20 border border-yellow-400/40 rounded-2xl backdrop-blur-sm hover:bg-yellow-500/30 transition-all">
+                  <div className="flex items-center gap-3">
+                    <Trophy className="w-5 h-5 text-yellow-300" />
+                    <span className="text-yellow-200 font-semibold">HISTORISCHES GEBÄUDE</span>
+                  </div>
+                </div>
+                <div className="px-5 py-3 bg-blue-500/20 border border-blue-400/40 rounded-2xl backdrop-blur-sm hover:bg-blue-500/30 transition-all">
+                  <div className="flex items-center gap-3">
+                    <Activity className="w-5 h-5 text-blue-300" />
+                    <span className="text-blue-200 font-semibold">{schoolKpis.sportActivities} Sport-AGs</span>
+                  </div>
+                </div>
+                <div className="px-5 py-3 bg-purple-500/20 border border-purple-400/40 rounded-2xl backdrop-blur-sm hover:bg-purple-500/30 transition-all">
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="w-5 h-5 text-purple-300" />
+                    <span className="text-purple-200 font-semibold">{schoolKpis.classroomUtilization.toFixed(0)}% Auslastung</span>
+                  </div>
+                </div>
               </div>
             </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <span className="text-sm font-medium">Klassenstärke Ø</span>
-                <span className="font-bold">26,7 Schüler</span>
+            <div className="text-right">
+              <EcoCard variant="glass" size="sm">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
+                  <span className="text-white font-bold text-lg">System Online</span>
+                </div>
+                <div className="text-slate-300 text-sm mb-2">
+                  Letztes Update: {new Date().toLocaleTimeString('de-DE')}
+                </div>
+                <div className="text-slate-400 text-xs">
+                  Unterricht: 07:45 - 16:30
+                </div>
+              </EcoCard>
+            </div>
+          </div>
+        </EcoCard>
+
+        {/* Education KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
+          <EcoKPICard
+            title="Energieintensität"
+            value={schoolKpis.energyIntensity.toFixed(1)}
+            unit="kWh/m²"
+            icon={Zap}
+            color="green"
+            trend={{
+              value: -12.3,
+              label: "vs. Vorjahr",
+              isPositive: true
+            }}
+            className="touch-friendly"
+          />
+
+          <EcoKPICard
+            title="CO₂-Emissionen"
+            value={schoolKpis.co2Emissions.toFixed(1)}
+            unit="t/Jahr"
+            icon={Leaf}
+            color="green"
+            trend={{
+              value: -8.7,
+              label: "Reduktion",
+              isPositive: true
+            }}
+            className="touch-friendly"
+          />
+
+          <EcoKPICard
+            title="PV-Eigenverbrauch"
+            value={schoolKpis.pvSelfConsumption.toFixed(1)}
+            unit="%"
+            icon={Sun}
+            color="green"
+            progress={schoolKpis.pvSelfConsumption}
+            trend={{
+              value: 15.2,
+              label: "Steigerung",
+              isPositive: true
+            }}
+            className="touch-friendly"
+          />
+
+          <EcoKPICard
+            title="Spitzenlast"
+            value={schoolKpis.peakLoad.toFixed(1)}
+            unit="kW"
+            icon={Activity}
+            color="blue"
+            trend={{
+              value: -5.4,
+              label: "Optimierung",
+              isPositive: true
+            }}
+            className="touch-friendly"
+          />
+
+          <EcoKPICard
+            title="Energiekosten"
+            value={`€${schoolKpis.energyCosts.toFixed(0)}`}
+            unit="/Monat"
+            icon={DollarSign}
+            color="green"
+            trend={{
+              value: -18.9,
+              label: "Einsparung",
+              isPositive: true
+            }}
+            className="touch-friendly"
+          />
+
+          <EcoKPICard
+            title="Auslastung"
+            value={schoolKpis.classroomUtilization.toFixed(1)}
+            unit="%"
+            icon={BookOpen}
+            color="purple"
+            progress={schoolKpis.classroomUtilization}
+            trend={{
+              value: 3.2,
+              label: "Steigerung",
+              isPositive: true
+            }}
+            className="touch-friendly"
+          />
+        </div>
+
+        {/* Education Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <EcoCard variant="glass" size="lg" className="col-span-1 lg:col-span-2">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-3 h-3 bg-gradient-to-r from-emerald-400 to-green-500 rounded-full" />
+              <h3 className="text-2xl font-bold text-white">Schulbetrieb Energieverlauf</h3>
+            </div>
+            <div className="text-slate-300 text-sm mb-6">
+              Verbrauch entsprechend Unterrichtszeiten • Optimiert für Bildungsbetrieb
+            </div>
+            <LazyLineChart data={energyDataMock} height={320} />
+          </EcoCard>
+
+          <EcoCard variant="glass" size="md">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-teal-500 rounded-full" />
+              <h3 className="text-xl font-bold text-white">Tagesverteilung</h3>
+            </div>
+            <div className="text-slate-300 text-sm mb-6">
+              Spitzenzeiten während Schulbetrieb
+            </div>
+            <LazyBarChart data={energyDataMock} height={280} />
+          </EcoCard>
+
+          <div className="chart-glass-container">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full" />
+              <h3 className="text-xl font-bold text-white">Bildungs-KPIs</h3>
+            </div>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl backdrop-blur-sm">
+                <span className="text-emerald-200/80">Unterrichtsräume aktiv</span>
+                <span className="text-green-400 font-bold">34/42</span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <span className="text-sm font-medium">Lehrkräfte</span>
-                <span className="font-bold">95 Personen</span>
+              <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl backdrop-blur-sm">
+                <span className="text-emerald-200/80">Sport-/AG-Räume</span>
+                <span className="text-green-400 font-bold">12/15</span>
               </div>
-              <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <span className="text-sm font-medium">Schulstunden/Tag</span>
-                <span className="font-bold">8-9 Stunden</span>
+              <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl backdrop-blur-sm">
+                <span className="text-emerald-200/80">Digitale Tafeln online</span>
+                <span className="text-green-400 font-bold">38/42</span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl backdrop-blur-sm">
+                <span className="text-emerald-200/80">WLAN-Abdeckung</span>
+                <span className="text-green-400 font-bold">98.7%</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-purple-600" />
-            Nutzungszeiten
-          </h3>
-          <div className="space-y-4">
-            <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-              <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-2">
-                Schulzeiten
-              </h4>
-              <div className="text-sm text-purple-700 dark:text-purple-300">
-                Mo-Fr: 7:30 - 17:00 Uhr<br/>
-                (Ganztagsschule)
-              </div>
+        {/* Education Success Alert */}
+        <EcoCard variant="glass" size="lg" className="touch-friendly">
+          <div className="flex items-start gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg">
+              <Heart className="w-8 h-8 text-white" />
             </div>
-            
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm">Aktuelle Auslastung</span>
-                <span className="text-sm font-bold">85%</span>
-              </div>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                <div className="bg-purple-600 h-2 rounded-full" style={{ width: '85%' }}></div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">15</div>
-                <div className="text-xs text-gray-500">kWh/Schüler/Tag</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">82%</div>
-                <div className="text-xs text-gray-500">Auslastung Räume</div>
+            <div className="flex-1">
+              <h3 className="text-2xl font-bold text-white mb-3">
+                Energieeffizienz im Bildungsbereich
+              </h3>
+              <p className="text-slate-300 text-lg leading-relaxed mb-6">
+                Das Gymnasium Hechingen zeigt vorbildliche Energieeffizienz mit 15% besserer Performance als vergleichbare Schulen. Die Kombination aus modernster Technik, pädagogischem Umweltbewusstsein und intelligentem Gebäudemanagement macht die Schule zu einem Vorreiter im nachhaltigen Bildungswesen.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-4 rounded-xl border border-green-500/30">
+                  <div className="text-green-400 font-bold text-lg">115 Jahre</div>
+                  <div className="text-green-300 text-sm">Bildungsgeschichte</div>
+                </div>
+                <div className="bg-gradient-to-r from-blue-500/20 to-teal-500/20 p-4 rounded-xl border border-blue-500/30">
+                  <div className="text-blue-400 font-bold text-lg">€1.2M</div>
+                  <div className="text-blue-300 text-sm">Modernisierung 2022</div>
+                </div>
+                <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-4 rounded-xl border border-purple-500/30">
+                  <div className="text-purple-400 font-bold text-lg">32%</div>
+                  <div className="text-purple-300 text-sm">Effizienzsteigerung</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Building Structure */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <BuildingIcon className="w-5 h-5 text-gray-600" />
-          Gebäudestruktur & Flächen
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
-              {building.area.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">m² Gesamtfläche</div>
-          </div>
-          <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">45</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Klassenräume</div>
-          </div>
-          <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <div className="text-2xl font-bold text-green-600">12</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Fachräume</div>
-          </div>
-          <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-            <div className="text-2xl font-bold text-purple-600">3</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Stockwerke</div>
-          </div>
-        </div>
+        </EcoCard>
       </div>
     </div>
   );

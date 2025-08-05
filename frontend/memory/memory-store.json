@@ -1,0 +1,22 @@
+{
+  "default": [
+    {
+      "key": "swarm/objective",
+      "value": "init",
+      "namespace": "default",
+      "timestamp": 1754352114255
+    },
+    {
+      "key": "swarm/config",
+      "value": "{\"strategy\": \"centralized\", \"mode\": \"centralized\", \"maxAgents\": 5}",
+      "namespace": "default",
+      "timestamp": 1754352115058
+    },
+    {
+      "key": "swarm/status",
+      "value": "initializing",
+      "namespace": "default",
+      "timestamp": 1754352115836
+    }
+  ]
+}

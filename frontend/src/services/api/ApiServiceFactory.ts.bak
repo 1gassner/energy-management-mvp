@@ -1,0 +1,368 @@
+/**
+ * API Service Factory Pattern for CityPulse
+ * 
+ * This factory enables seamless switching between Mock and Real API implementations
+ * without changing any frontend code. Perfect for development-to-production transitions.
+ */
+
+import { mockAPIService as MockApiService } from '../mock/mockApiService';
+import { realAPIService as RealApiService } from './realApiService';
+import type { ApiServiceInterface } from '../types/apiService';
+
+export type ApiMode = 'mock' | 'real' | 'hybrid';
+
+export interface ApiConfig {
+  mode: ApiMode;
+  baseUrl?: string;
+  apiKey?: string;
+  enableCache?: boolean;
+  timeout?: number;
+  retryAttempts?: number;
+  enableRealtime?: boolean;
+  supabaseUrl?: string;
+  supabaseAnonKey?: string;
+}
+
+export class ApiServiceFactory {
+  private static instance: ApiServiceInterface;
+  private static config: ApiConfig;
+
+  /**
+   * Initialize the API service with configuration
+   */
+  static initialize(config: ApiConfig): void {
+    this.config = {
+      enableCache: true,
+      timeout: 10000,
+      retryAttempts: 3,
+      enableRealtime: true,
+      ...config
+    };
+
+    // Clear existing instance to force recreation
+    this.instance = null as any;
+  }
+
+  /**
+   * Get the configured API service instance
+   */
+  static getInstance(): ApiServiceInterface {
+    if (!this.instance) {
+      this.instance = this.createApiService();
+    }
+    return this.instance;
+  }
+
+  /**
+   * Create the appropriate API service based on configuration
+   */
+  private static createApiService(): ApiServiceInterface {
+    const { mode } = this.config;
+
+    switch (mode) {
+      case 'mock':
+        console.log('🔧 Using Mock API Service for development');
+        return MockApiService;
+
+      case 'real':
+        console.log('🚀 Using Real API Service for production');
+        return RealApiService;
+
+      case 'hybrid':
+        console.log('🔄 Using Hybrid API Service (mock + real endpoints)');
+        // Hybrid mode not implemented yet, fallback to mock
+        return MockApiService;
+
+      default:
+        console.warn(`⚠️ Unknown API mode: ${mode}, falling back to mock`);
+        return MockApiService;
+    }
+  }
+
+  /**
+   * Switch API mode at runtime (useful for testing)
+   */
+  static switchMode(newMode: ApiMode): void {
+    console.log(`🔄 Switching API mode from ${this.config.mode} to ${newMode}`);
+    this.config.mode = newMode;
+    this.instance = null as any; // Force recreation
+  }
+
+  /**
+   * Get current configuration
+   */
+  static getConfig(): ApiConfig {
+    return { ...this.config };
+  }
+
+  /**
+   * Check if real API is available
+   */
+  static async isRealApiAvailable(): Promise<boolean> {
+    try {
+      const baseUrl = this.config.baseUrl || process.env.REACT_APP_API_URL;
+      if (!baseUrl) return false;
+
+      const response = await fetch(`${baseUrl}/health`, {
+        method: 'GET',
+        timeout: 5000,
+      } as any);
+
+      return response.ok;
+    } catch (error) {
+      console.log('Real API not available:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Auto-detect and configure the best API mode
+   */
+  static async autoDetectMode(): Promise<ApiMode> {
+    const isRealAvailable = await this.isRealApiAvailable();
+    
+    if (isRealAvailable) {
+      console.log('✅ Real API detected and available');
+      return 'real';
+    } else {
+      console.log('🔧 Real API not available, using mock data');
+      return 'mock';
+    }
+  }
+
+  /**
+   * Smart initialization that auto-detects the best mode
+   */
+  static async smartInitialize(baseConfig: Partial<ApiConfig> = {}): Promise<void> {
+    const detectedMode = await this.autoDetectMode();
+    
+    const config: ApiConfig = {
+      mode: detectedMode,
+      baseUrl: process.env.REACT_APP_API_URL || 'http://localhost:8000/v1',
+      supabaseUrl: process.env.REACT_APP_SUPABASE_URL,
+      supabaseAnonKey: process.env.REACT_APP_SUPABASE_ANON_KEY,
+      ...baseConfig
+    };
+
+    this.initialize(config);
+  }
+}
+
+/**
+ * Hybrid API Service - uses real API where available, fallback to mock
+ */
+class HybridApiService implements ApiServiceInterface {
+  private realApi: typeof RealApiService;
+  private mockApi: typeof MockApiService;
+
+  constructor(config: ApiConfig) {
+    this.realApi = RealApiService;
+    this.mockApi = MockApiService;
+  }
+
+  // Implement all ApiServiceInterface methods with fallback logic
+  async login(email: string, password: string) {
+    try {
+      return await this.realApi.login(email, password);
+    } catch (error) {
+      console.log('Real API login failed, using mock:', error);
+      return await this.mockApi.login(email, password);
+    }
+  }
+
+  async logout() {
+    try {
+      await this.realApi.logout();
+    } catch (error) {
+      console.log('Real API logout failed, using mock:', error);
+    }
+    return await this.mockApi.logout();
+  }
+
+  async getCurrentUser() {
+    try {
+      return await this.realApi.getCurrentUser();
+    } catch (error) {
+      console.log('Real API getCurrentUser failed, using mock:', error);
+      return await this.mockApi.getCurrentUser();
+    }
+  }
+
+  async getBuildings() {
+    try {
+      return await this.realApi.getBuildings();
+    } catch (error) {
+      console.log('Real API getBuildings failed, using mock:', error);
+      return await this.mockApi.getBuildings();
+    }
+  }
+
+  async getBuilding(id: string) {
+    try {
+      return await this.realApi.getBuilding(id);
+    } catch (error) {
+      console.log('Real API getBuilding failed, using mock:', error);
+      return await this.mockApi.getBuilding(id);
+    }
+  }
+
+  async getBuildingSensors(buildingId: string) {
+    try {
+      return await this.realApi.getBuildingSensors(buildingId);
+    } catch (error) {
+      console.log('Real API getBuildingSensors failed, using mock:', error);
+      return await this.mockApi.getBuildingSensors(buildingId);
+    }
+  }
+
+  async getSensors(filters?: any) {
+    try {
+      return await this.realApi.getSensors(filters);
+    } catch (error) {
+      console.log('Real API getSensors failed, using mock:', error);
+      return await this.mockApi.getSensors(filters);
+    }
+  }
+
+  async getSensor(id: string) {
+    try {
+      return await this.realApi.getSensor(id);
+    } catch (error) {
+      console.log('Real API getSensor failed, using mock:', error);
+      return await this.mockApi.getSensor(id);
+    }
+  }
+
+  async getEnergyData(buildingId?: string, period?: string) {
+    try {
+      return await this.realApi.getEnergyData(buildingId, period);
+    } catch (error) {
+      console.log('Real API getEnergyData failed, using mock:', error);
+      return await this.mockApi.getEnergyData(buildingId, period);
+    }
+  }
+
+  async getDashboardStats() {
+    try {
+      return await this.realApi.getDashboardStats();
+    } catch (error) {
+      console.log('Real API getDashboardStats failed, using mock:', error);
+      return await this.mockApi.getDashboardStats();
+    }
+  }
+
+  async getAlerts(filters?: any) {
+    try {
+      return await this.realApi.getAlerts(filters);
+    } catch (error) {
+      console.log('Real API getAlerts failed, using mock:', error);
+      return await this.mockApi.getAlerts(filters);
+    }
+  }
+
+  async updateAlert(id: string, updates: any) {
+    try {
+      return await this.realApi.updateAlert(id, updates);
+    } catch (error) {
+      console.log('Real API updateAlert failed, using mock:', error);
+      return await this.mockApi.updateAlert(id, updates);
+    }
+  }
+
+  async getAnalytics(period: string) {
+    try {
+      return await this.realApi.getAnalytics(period);
+    } catch (error) {
+      console.log('Real API getAnalytics failed, using mock:', error);
+      return await this.mockApi.getAnalytics(period);
+    }
+  }
+
+  // WebSocket methods
+  connectWebSocket?() {
+    try {
+      return this.realApi.connectWebSocket?.();
+    } catch (error) {
+      console.log('Real API WebSocket failed, using mock:', error);
+      return this.mockApi.connectWebSocket?.();
+    }
+  }
+
+  disconnectWebSocket?() {
+    try {
+      this.realApi.disconnectWebSocket?.();
+    } catch (error) {
+      console.log('Real API WebSocket disconnect failed');
+    }
+    this.mockApi.disconnectWebSocket?.();
+  }
+
+  subscribeToSensorUpdates?(buildingId: string, callback: (data: any) => void) {
+    try {
+      return this.realApi.subscribeToSensorUpdates?.(buildingId, callback);
+    } catch (error) {
+      console.log('Real API sensor subscription failed, using mock:', error);
+      return this.mockApi.subscribeToSensorUpdates?.(buildingId, callback);
+    }
+  }
+
+  subscribeToAlerts?(callback: (alert: any) => void) {
+    try {
+      return this.realApi.subscribeToAlerts?.(callback);
+    } catch (error) {
+      console.log('Real API alert subscription failed, using mock:', error);
+      return this.mockApi.subscribeToAlerts?.(callback);
+    }
+  }
+}
+
+/**
+ * Environment-based configuration helper
+ */
+export const getEnvironmentConfig = (): Partial<ApiConfig> => {
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isProduction = process.env.NODE_ENV === 'production';
+  
+  if (isDevelopment) {
+    return {
+      mode: 'mock', // Default to mock in development
+      enableCache: true,
+      timeout: 30000, // Longer timeout for debugging
+      retryAttempts: 1, // Fewer retries in development
+    };
+  }
+
+  if (isProduction) {
+    return {
+      mode: 'real', // Use real API in production
+      enableCache: true,
+      timeout: 10000,
+      retryAttempts: 3,
+      enableRealtime: true,
+    };
+  }
+
+  return {
+    mode: 'hybrid', // Fallback mode
+  };
+};
+
+/**
+ * Easy-to-use API singleton
+ */
+export const apiService = () => ApiServiceFactory.getInstance();
+
+/**
+ * Development helper for runtime mode switching
+ */
+if (process.env.NODE_ENV === 'development') {
+  (window as any).CityPulseAPI = {
+    switchToMock: () => ApiServiceFactory.switchMode('mock'),
+    switchToReal: () => ApiServiceFactory.switchMode('real'),
+    switchToHybrid: () => ApiServiceFactory.switchMode('hybrid'),
+    getConfig: () => ApiServiceFactory.getConfig(),
+    checkRealAPI: () => ApiServiceFactory.isRealApiAvailable(),
+  };
+  
+  console.log('🔧 CityPulse API Dev Tools available at window.CityPulseAPI');
+}

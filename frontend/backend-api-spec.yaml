@@ -1,0 +1,1364 @@
+openapi: 3.0.3
+info:
+  title: CityPulse Hechingen Energy Management API
+  description: |
+    Comprehensive API for CityPulse Hechingen Energy Management System.
+    Monitors 7 buildings with 745+ sensors for real-time energy management.
+    
+    ## Features
+    - Real-time energy monitoring across 7 municipal buildings
+    - Role-based access control (6 user roles)
+    - WebSocket support for live data updates
+    - Comprehensive analytics and reporting
+    - Building-specific dashboards and insights
+    
+    ## Buildings
+    - **Rathaus** - Administrative building (125 sensors)
+    - **Gymnasium** - Educational facility (142 sensors)  
+    - **Realschule** - Educational facility (98 sensors)
+    - **Werkrealschule** - Educational facility (87 sensors)
+    - **Grundschule** - Educational facility (76 sensors)
+    - **Sporthallen** - Sports facilities (112 sensors)
+    - **Hallenbad** - Aquatic center (105 sensors)
+    
+    ## User Roles
+    - **Admin** - Full system access
+    - **Techniker** - Maintenance and sensor management
+    - **Energiemanager** - Analytics and optimization
+    - **Gebäudeverwalter** - Building operations
+    - **Bürger** - Public data access
+    - **Analyst** - Data analysis and insights
+    
+  version: 1.0.0
+  contact:
+    name: CityPulse Support
+    email: support@citypulse-hechingen.de
+    url: https://citypulse-hechingen.de/support
+  license:
+    name: Proprietary
+    url: https://citypulse-hechingen.de/license
+
+servers:
+  - url: https://api.citypulse-hechingen.de/api
+    description: Production server
+  - url: https://staging-api.citypulse-hechingen.de/api
+    description: Staging server
+  - url: http://localhost:3001/api
+    description: Development server
+
+paths:
+  # Authentication Endpoints
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user and return JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginCredentials'
+            examples:
+              admin:
+                summary: Admin login
+                value:
+                  email: admin@hechingen.de
+                  password: admin123
+              techniker:
+                summary: Techniker login
+                value:
+                  email: techniker@hechingen.de
+                  password: tech123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: User registration
+      description: Register new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterData'
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid registration data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/refresh:
+    get:
+      tags:
+        - Authentication
+      summary: Refresh user data
+      description: Get current user information
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      description: Invalidate user session
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+        '401':
+          description: Invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # Building Endpoints
+  /buildings:
+    get:
+      tags:
+        - Buildings
+      summary: Get all buildings
+      description: Retrieve list of all monitored buildings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Buildings retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Building'
+
+  /buildings/{buildingId}:
+    get:
+      tags:
+        - Buildings
+      summary: Get building details
+      description: Get detailed information about a specific building
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: rathaus
+      responses:
+        '200':
+          description: Building details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+        '404':
+          description: Building not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - Buildings
+      summary: Update building
+      description: Update building configuration (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildingUpdate'
+      responses:
+        '200':
+          description: Building updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # Energy Data Endpoints
+  /energy:
+    get:
+      tags:
+        - Energy Data
+      summary: Get energy data
+      description: Retrieve energy consumption and production data
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: query
+          schema:
+            type: string
+          description: Filter by building ID
+          example: rathaus
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [hour, day, week, month, year]
+          description: Time period for data aggregation
+          example: day
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: Start date for data range
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date-time
+          description: End date for data range
+      responses:
+        '200':
+          description: Energy data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnergyData'
+
+  /energy/latest/{buildingId}:
+    get:
+      tags:
+        - Energy Data
+      summary: Get latest energy data
+      description: Get the most recent energy reading for a building
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: gymnasium
+      responses:
+        '200':
+          description: Latest energy data retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnergyData'
+
+  # Sensor Endpoints
+  /sensors:
+    get:
+      tags:
+        - Sensors
+      summary: Get sensors
+      description: Retrieve list of sensors with filtering options
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: query
+          schema:
+            type: string
+          description: Filter by building
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [energy, temperature, humidity, co2, motion, water_quality, air_quality]
+          description: Filter by sensor type
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [online, offline, maintenance, error]
+          description: Filter by sensor status
+      responses:
+        '200':
+          description: Sensors retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sensor'
+
+  /sensors/{sensorId}:
+    get:
+      tags:
+        - Sensors
+      summary: Get sensor details
+      description: Get detailed information about a specific sensor
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: sensor-001
+      responses:
+        '200':
+          description: Sensor details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
+
+    put:
+      tags:
+        - Sensors
+      summary: Update sensor
+      description: Update sensor configuration (Techniker/Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sensorId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorUpdate'
+      responses:
+        '200':
+          description: Sensor updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
+
+  # Alert Endpoints
+  /alerts:
+    get:
+      tags:
+        - Alerts
+      summary: Get alerts
+      description: Retrieve system alerts with filtering
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: query
+          schema:
+            type: string
+          description: Filter by building
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, critical]
+          description: Filter by severity level
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, acknowledged, resolved]
+          description: Filter by alert status
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Limit number of results
+      responses:
+        '200':
+          description: Alerts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Alert'
+
+  /alerts/{alertId}:
+    get:
+      tags:
+        - Alerts
+      summary: Get alert details
+      description: Get detailed information about a specific alert
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: alertId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: alert-001
+      responses:
+        '200':
+          description: Alert details retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alert'
+
+  /alerts/{alertId}/acknowledge:
+    put:
+      tags:
+        - Alerts
+      summary: Acknowledge alert
+      description: Mark alert as acknowledged
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: alertId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+                  description: Optional acknowledgment note
+              example:
+                note: "Techniker wurde benachrichtigt"
+      responses:
+        '200':
+          description: Alert acknowledged successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alert'
+
+  /alerts/{alertId}/resolve:
+    put:
+      tags:
+        - Alerts
+      summary: Resolve alert
+      description: Mark alert as resolved
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: alertId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - resolution
+              properties:
+                resolution:
+                  type: string
+                  description: Description of how the alert was resolved
+                resolvedBy:
+                  type: string
+                  description: User who resolved the alert
+              example:
+                resolution: "Sensor wurde neu kalibriert"
+                resolvedBy: "techniker@hechingen.de"
+      responses:
+        '200':
+          description: Alert resolved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alert'
+
+  # Analytics Endpoints
+  /analytics:
+    get:
+      tags:
+        - Analytics
+      summary: Get analytics data
+      description: Retrieve comprehensive analytics and insights
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: period
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [day, week, month, year]
+          description: Analysis period
+        - name: buildingId
+          in: query
+          schema:
+            type: string
+          description: Specific building analysis
+        - name: metrics
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [efficiency, consumption, production, co2, cost]
+          description: Specific metrics to include
+      responses:
+        '200':
+          description: Analytics data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsData'
+
+  /dashboard/stats:
+    get:
+      tags:
+        - Analytics
+      summary: Get dashboard statistics
+      description: Get key metrics for dashboard display
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard statistics retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+
+  # Health and Status Endpoints
+  /health:
+    get:
+      tags:
+        - System
+      summary: Health check
+      description: Get system health status
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+        '503':
+          description: System is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+  /metrics:
+    get:
+      tags:
+        - System
+      summary: System metrics
+      description: Get system performance metrics (Admin only)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: System metrics retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemMetrics'
+        '403':
+          description: Insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Authentication Schemas
+    LoginCredentials:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@hechingen.de
+        password:
+          type: string
+          format: password
+          example: admin123
+
+    RegisterData:
+      type: object
+      required:
+        - name
+        - email
+        - password
+        - confirmPassword
+      properties:
+        name:
+          type: string
+          example: Max Mustermann
+        email:
+          type: string
+          format: email
+          example: max@example.com
+        password:
+          type: string
+          format: password
+          minLength: 6
+        confirmPassword:
+          type: string
+          format: password
+
+    LoginResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+          description: JWT authentication token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: user-001
+        email:
+          type: string
+          format: email
+          example: admin@hechingen.de
+        name:
+          type: string
+          example: Administrator
+        role:
+          type: string
+          enum: [admin, techniker, energiemanager, gebäudeverwalter, bürger, analyst]
+          example: admin
+        createdAt:
+          type: string
+          format: date-time
+          example: 2024-01-15T09:00:00Z
+        lastLogin:
+          type: string
+          format: date-time
+          example: 2025-08-03T14:30:00Z
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+        permissions:
+          type: array
+          items:
+            type: string
+          example: [read:all, write:all, delete:all]
+
+    # Building Schemas
+    Building:
+      type: object
+      properties:
+        id:
+          type: string
+          example: rathaus
+        name:
+          type: string
+          example: Rathaus Hechingen
+        type:
+          type: string
+          enum: [administrative, educational, sports, recreational]
+          example: administrative
+        address:
+          type: string
+          example: Marktplatz 1, 72379 Hechingen
+        totalSensors:
+          type: integer
+          example: 125
+        status:
+          type: string
+          enum: [online, offline, maintenance]
+          example: online
+        coordinates:
+          type: object
+          properties:
+            lat:
+              type: number
+              format: double
+              example: 48.3519
+            lng:
+              type: number
+              format: double
+              example: 8.9615
+        energyConfig:
+          type: object
+          properties:
+            capacity:
+              type: number
+              format: double
+              description: Maximum capacity in kW
+              example: 500.0
+            peakConsumption:
+              type: number
+              format: double
+              description: Peak consumption in kW
+              example: 320.0
+            averageConsumption:
+              type: number
+              format: double
+              description: Average consumption in kW
+              example: 180.5
+        lastUpdate:
+          type: string
+          format: date-time
+          example: 2025-08-03T14:30:00Z
+
+    BuildingUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        energyConfig:
+          type: object
+          properties:
+            capacity:
+              type: number
+              format: double
+            peakConsumption:
+              type: number
+              format: double
+            averageConsumption:
+              type: number
+              format: double
+
+    # Energy Data Schemas
+    EnergyData:
+      type: object
+      properties:
+        id:
+          type: string
+          example: energy-001
+        buildingId:
+          type: string
+          example: rathaus
+        timestamp:
+          type: string
+          format: date-time
+          example: 2025-08-03T14:00:00Z
+        produced:
+          type: number
+          format: double
+          description: Energy produced in kWh
+          example: 125.5
+        consumed:
+          type: number
+          format: double
+          description: Energy consumed in kWh
+          example: 98.2
+        efficiency:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 1
+          description: Energy efficiency ratio
+          example: 0.78
+        co2Saved:
+          type: number
+          format: double
+          description: CO2 savings in kg
+          example: 15.6
+        source:
+          type: string
+          description: Data source identifier
+          example: sensor_network
+        metadata:
+          type: object
+          additionalProperties: true
+          example:
+            weather: sunny
+            temperature: 24.5
+            humidity: 65
+
+    # Sensor Schemas
+    Sensor:
+      type: object
+      properties:
+        id:
+          type: string
+          example: sensor-001
+        buildingId:
+          type: string
+          example: rathaus
+        name:
+          type: string
+          example: Haupteingang Energiemesser
+        type:
+          type: string
+          enum: [energy, temperature, humidity, co2, motion, water_quality, air_quality]
+          example: energy
+        location:
+          type: string
+          example: Erdgeschoss, Haupteingang
+        status:
+          type: string
+          enum: [online, offline, maintenance, error]
+          example: online
+        value:
+          type: number
+          format: double
+          description: Current sensor value
+          example: 125.5
+        unit:
+          type: string
+          description: Unit of measurement
+          example: kWh
+        lastReading:
+          type: string
+          format: date-time
+          example: 2025-08-03T14:30:00Z
+        calibrationDate:
+          type: string
+          format: date-time
+          example: 2025-01-15T10:00:00Z
+        alertThresholds:
+          type: object
+          properties:
+            low:
+              type: number
+              format: double
+              example: 50
+            high:
+              type: number
+              format: double
+              example: 200
+            critical:
+              type: number
+              format: double
+              example: 250
+        metadata:
+          type: object
+          additionalProperties: true
+
+    SensorUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        location:
+          type: string
+        alertThresholds:
+          type: object
+          properties:
+            low:
+              type: number
+              format: double
+            high:
+              type: number
+              format: double
+            critical:
+              type: number
+              format: double
+
+    # Alert Schemas
+    Alert:
+      type: object
+      properties:
+        id:
+          type: string
+          example: alert-001
+        buildingId:
+          type: string
+          example: gymnasium
+        sensorId:
+          type: string
+          nullable: true
+          example: sensor-045
+        type:
+          type: string
+          enum: [energy_spike, energy_low, sensor_offline, system_failure, maintenance_required]
+          example: energy_spike
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+          example: high
+        status:
+          type: string
+          enum: [active, acknowledged, resolved]
+          example: active
+        title:
+          type: string
+          example: Hoher Energieverbrauch erkannt
+        description:
+          type: string
+          example: Ungewöhnlich hoher Energieverbrauch in der Sporthalle
+        value:
+          type: number
+          format: double
+          nullable: true
+          description: Current value that triggered alert
+          example: 245.8
+        threshold:
+          type: number
+          format: double
+          nullable: true
+          description: Threshold value that was exceeded
+          example: 200.0
+        timestamp:
+          type: string
+          format: date-time
+          example: 2025-08-03T14:15:00Z
+        acknowledgments:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+              timestamp:
+                type: string
+                format: date-time
+              note:
+                type: string
+                nullable: true
+        resolution:
+          type: object
+          nullable: true
+          properties:
+            userId:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+            description:
+              type: string
+        escalationLevel:
+          type: integer
+          minimum: 0
+          example: 1
+        metadata:
+          type: object
+          additionalProperties: true
+          example:
+            location: Sporthalle A
+            affectedSystems: [heating, lighting]
+
+    # Analytics Schemas
+    AnalyticsData:
+      type: object
+      properties:
+        period:
+          type: string
+          enum: [day, week, month, year]
+          example: week
+        buildingId:
+          type: string
+          nullable: true
+          example: all
+        summary:
+          type: object
+          properties:
+            totalEnergyProduced:
+              type: number
+              format: double
+              example: 8542.5
+            totalEnergyConsumed:
+              type: number
+              format: double
+              example: 7234.2
+            efficiency:
+              type: number
+              format: double
+              example: 0.85
+            co2Saved:
+              type: number
+              format: double
+              example: 892.4
+            costSavings:
+              type: number
+              format: double
+              example: 1234.56
+        trends:
+          type: object
+          properties:
+            energyProduction:
+              type: number
+              format: double
+              description: Percentage change
+              example: 5.2
+            energyConsumption:
+              type: number
+              format: double
+              description: Percentage change
+              example: -2.1
+            efficiency:
+              type: number
+              format: double
+              description: Percentage change
+              example: 3.8
+            co2Savings:
+              type: number
+              format: double
+              description: Percentage change
+              example: 8.5
+        predictions:
+          type: object
+          nullable: true
+          properties:
+            nextPeriodConsumption:
+              type: number
+              format: double
+              example: 7456.8
+            efficiency:
+              type: number
+              format: double
+              example: 0.87
+            confidence:
+              type: number
+              format: double
+              minimum: 0
+              maximum: 1
+              example: 0.92
+        timeSeriesData:
+          type: array
+          items:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              produced:
+                type: number
+                format: double
+              consumed:
+                type: number
+                format: double
+              efficiency:
+                type: number
+                format: double
+
+    DashboardStats:
+      type: object
+      properties:
+        totalEnergyProduced:
+          type: number
+          format: double
+          example: 12543.8
+        totalEnergyConsumed:
+          type: number
+          format: double
+          example: 10234.5
+        totalCO2Saved:
+          type: number
+          format: double
+          example: 1456.7
+        totalBuildings:
+          type: integer
+          example: 7
+        activeAlerts:
+          type: integer
+          example: 3
+        systemEfficiency:
+          type: number
+          format: double
+          example: 0.82
+        trends:
+          type: object
+          properties:
+            energyProduction:
+              type: number
+              format: double
+              example: 8.5
+            energyConsumption:
+              type: number
+              format: double
+              example: -3.2
+            efficiency:
+              type: number
+              format: double
+              example: 5.8
+            co2Savings:
+              type: number
+              format: double
+              example: 12.4
+
+    # System Schemas
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+          example: healthy
+        timestamp:
+          type: string
+          format: date-time
+          example: 2025-08-03T14:30:00Z
+        version:
+          type: string
+          example: 1.0.0
+        services:
+          type: object
+          properties:
+            database:
+              type: string
+              enum: [healthy, degraded, unhealthy]
+            redis:
+              type: string
+              enum: [healthy, degraded, unhealthy]
+            websocket:
+              type: string
+              enum: [healthy, degraded, unhealthy]
+            sensors:
+              type: string
+              enum: [healthy, degraded, unhealthy]
+        stats:
+          type: object
+          properties:
+            activeConnections:
+              type: integer
+              example: 245
+            requestsPerMinute:
+              type: integer
+              example: 1205
+            averageResponseTime:
+              type: integer
+              description: Average response time in milliseconds
+              example: 180
+
+    SystemMetrics:
+      type: object
+      properties:
+        performance:
+          type: object
+          properties:
+            cpu:
+              type: number
+              format: double
+              description: CPU usage percentage
+              example: 45.2
+            memory:
+              type: number
+              format: double
+              description: Memory usage percentage
+              example: 67.8
+            disk:
+              type: number
+              format: double
+              description: Disk usage percentage
+              example: 23.4
+        database:
+          type: object
+          properties:
+            connections:
+              type: integer
+              example: 15
+            queryTime:
+              type: number
+              format: double
+              description: Average query time in milliseconds
+              example: 25.6
+        api:
+          type: object
+          properties:
+            requestsPerSecond:
+              type: number
+              format: double
+              example: 12.5
+            averageResponseTime:
+              type: number
+              format: double
+              description: Average response time in milliseconds
+              example: 180.3
+            errorRate:
+              type: number
+              format: double
+              description: Error rate percentage
+              example: 0.05
+
+    # Common Schemas
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Invalid input parameters
+            details:
+              type: object
+              properties:
+                field:
+                  type: string
+                  example: email
+                reason:
+                  type: string
+                  example: Invalid email format
+            timestamp:
+              type: string
+              format: date-time
+              example: 2025-08-03T14:30:00Z
+
+  examples:
+    # Building Examples
+    RathausBuilding:
+      summary: Rathaus building data
+      value:
+        id: rathaus
+        name: Rathaus Hechingen
+        type: administrative
+        address: Marktplatz 1, 72379 Hechingen
+        totalSensors: 125
+        status: online
+        coordinates:
+          lat: 48.3519
+          lng: 8.9615
+        energyConfig:
+          capacity: 500.0
+          peakConsumption: 320.0
+          averageConsumption: 180.5
+        lastUpdate: 2025-08-03T14:30:00Z
+
+    GymnasiumBuilding:
+      summary: Gymnasium building data
+      value:
+        id: gymnasium
+        name: Gymnasium Hechingen
+        type: educational
+        address: Gymnasiumstraße 1, 72379 Hechingen
+        totalSensors: 142
+        status: online
+        coordinates:
+          lat: 48.3525
+          lng: 8.9620
+        energyConfig:
+          capacity: 650.0
+          peakConsumption: 480.0
+          averageConsumption: 245.8
+        lastUpdate: 2025-08-03T14:30:00Z
+
+    # Alert Examples
+    CriticalAlert:
+      summary: Critical system alert
+      value:
+        id: alert-001
+        buildingId: hallenbad
+        sensorId: sensor-089
+        type: system_failure
+        severity: critical
+        status: active
+        title: Pumpsystem Ausfall
+        description: Hauptpumpe im Hallenbad nicht erreichbar
+        timestamp: 2025-08-03T14:35:00Z
+        acknowledgments: []
+        escalationLevel: 1
+        metadata:
+          location: Hauptpumpenraum
+          affectedSystems: [circulation, filtration, heating]
+
+    HighAlert:
+      summary: High priority energy alert
+      value:
+        id: alert-002
+        buildingId: gymnasium
+        sensorId: sensor-045
+        type: energy_spike
+        severity: high
+        status: active
+        title: Hoher Energieverbrauch erkannt
+        description: Ungewöhnlich hoher Energieverbrauch in der Sporthalle
+        value: 245.8
+        threshold: 200.0
+        timestamp: 2025-08-03T14:15:00Z
+        acknowledgments: []
+        escalationLevel: 1
+        metadata:
+          location: Sporthalle A
+          affectedSystems: [heating, lighting]
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Buildings
+    description: Building management and monitoring
+  - name: Energy Data
+    description: Energy consumption and production data
+  - name: Sensors
+    description: Sensor management and monitoring
+  - name: Alerts
+    description: Alert and notification management
+  - name: Analytics
+    description: Data analytics and insights
+  - name: System
+    description: System health and monitoring

@@ -2,18 +2,351 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/citypulse-icon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="CityPulse - Der digitale Puls deiner Stadt. Intelligente Verwaltung kommunaler Daten und Dienste." />
-    <meta name="theme-color" content="#1f2937" />
     
-    <!-- Security Headers - Relaxed for MVP with Mock Data -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' ws: wss: https: http:; img-src 'self' data: https: blob:; font-src 'self' data:;" />
+    <!-- PWA and Mobile Optimization -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="CityPulse" />
+    <meta name="application-name" content="CityPulse Hechingen" />
+    <meta name="msapplication-TileColor" content="#1e40af" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
     
-    <title>CityPulse - Der digitale Puls deiner Stadt</title>
+    <!-- Theme and Colors -->
+    <meta name="theme-color" content="#1e40af" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#1e40af" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1e3a8a" />
+    
+    <!-- Icons and Manifest -->
+    <link rel="icon" type="image/svg+xml" href="/hechingen-icon.svg" />
+    <link rel="apple-touch-icon" href="/hechingen-icon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- SEO and Meta Information -->
+    <meta name="description" content="CityPulse Hechingen - Smart City Energy System für die Stadt Hechingen. Intelligente Energieverwaltung und -optimierung für kommunale Gebäude mit Echtzeit-Monitoring und KI-basierter Analyse." />
+    <meta name="author" content="Stadt Hechingen" />
+    <meta name="keywords" content="Hechingen, CityPulse, Smart City, Energieverwaltung, Kommunal, Stadtwerke, Energieeffizienz, IoT, Nachhaltigkeit" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="de-DE" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="CityPulse Hechingen - Smart City Energy System" />
+    <meta property="og:description" content="Intelligente Energieverwaltung für kommunale Gebäude in Hechingen" />
+    <meta property="og:image" content="/hechingen-icon.svg" />
+    <meta property="og:url" content="https://citypulse-hechingen.de" />
+    <meta property="og:site_name" content="CityPulse Hechingen" />
+    <meta property="og:locale" content="de_DE" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CityPulse Hechingen - Smart Energy Management" />
+    <meta name="twitter:description" content="Intelligente Energieverwaltung für kommunale Gebäude" />
+    <meta name="twitter:image" content="/hechingen-icon.svg" />
+    
+    <!-- Performance and Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="//api.citypulse-hechingen.de" />
+    <!-- Removed problematic data URL modulepreload that causes MIME type errors -->
+    
+    <!-- Enhanced Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' wss: https:; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; worker-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;" />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), location=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), geolocation=()" />
+    
+    <!-- Critical CSS Inline (will be added by build process) -->
+    <style>
+      /* Critical above-the-fold styles */
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      #root {
+        min-height: 100vh;
+      }
+      
+      /* Loading spinner */
+      .initial-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      
+      .initial-loader .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Accessibility improvements */
+      .sr-only {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+      }
+      
+      /* Reduced motion support */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+      
+      /* High contrast support */
+      @media (prefers-contrast: high) {
+        * {
+          border-color: ButtonText !important;
+        }
+      }
+      
+      /* Dark mode support */
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #0f172a;
+          color: #f1f5f9;
+        }
+      }
+      
+      /* Focus indicators for keyboard navigation */
+      body.keyboard-navigation *:focus {
+        outline: 2px solid #3b82f6 !important;
+        outline-offset: 2px !important;
+      }
+    </style>
+    
+    <title>CityPulse Hechingen - Smart City Energy System</title>
   </head>
   <body>
+    <!-- Initial loading screen -->
+    <div class="initial-loader" id="initial-loader">
+      <div>
+        <div class="spinner"></div>
+        <div style="color: white; margin-top: 1rem; text-align: center;">
+          <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">CityPulse Hechingen</div>
+          <div style="font-size: 0.9rem; opacity: 0.8;">Wird geladen...</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Skip to main content link (accessibility) -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:rounded focus:z-50">
+      Zum Hauptinhalt springen
+    </a>
+    
     <div id="root"></div>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      // Remove loading screen when React app starts
+      window.addEventListener('DOMContentLoaded', () => {
+        // Hide loader after a minimum time to prevent flashing
+        setTimeout(() => {
+          const loader = document.getElementById('initial-loader');
+          if (loader) {
+            loader.style.opacity = '0';
+            loader.style.transition = 'opacity 0.3s ease-out';
+            setTimeout(() => loader.remove(), 300);
+          }
+        }, 500);
+      });
+      
+      // Service Worker Registration
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', async () => {
+          try {
+            const registration = await navigator.serviceWorker.register('/sw.js', {
+              scope: '/'
+            });
+            
+            console.log('Service Worker registered successfully:', registration);
+            
+            // Listen for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // Show update notification
+                    showUpdateNotification();
+                  }
+                });
+              }
+            });
+            
+            // Listen for messages from service worker
+            navigator.serviceWorker.addEventListener('message', (event) => {
+              const { type, data } = event.data;
+              
+              if (type === 'SW_METRICS') {
+                console.log('Service Worker Metrics:', data);
+              }
+            });
+            
+          } catch (error) {
+            console.error('Service Worker registration failed:', error);
+          }
+        });
+      }
+      
+      // PWA Install Prompt
+      let deferredPrompt;
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('PWA install prompt available');
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show custom install button (will be handled by React app)
+        window.dispatchEvent(new CustomEvent('pwa-installable', { detail: { prompt: e } }));
+      });
+      
+      window.addEventListener('appinstalled', () => {
+        console.log('PWA was installed');
+        deferredPrompt = null;
+        
+        // Analytics event
+        if (window.gtag) {
+          window.gtag('event', 'pwa_installed', {
+            event_category: 'PWA',
+            event_label: 'app_installed'
+          });
+        }
+      });
+      
+      // Update notification
+      function showUpdateNotification() {
+        const notification = document.createElement('div');
+        notification.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1e40af;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 10000;
+            max-width: 300px;
+          ">
+            <div style="font-weight: bold; margin-bottom: 0.5rem;">Update verfügbar</div>
+            <div style="margin-bottom: 1rem; font-size: 0.9rem;">Eine neue Version von CityPulse ist verfügbar.</div>
+            <button onclick="updateApp()" style="
+              background: white;
+              color: #1e40af;
+              border: none;
+              padding: 0.5rem 1rem;
+              border-radius: 4px;
+              cursor: pointer;
+              margin-right: 0.5rem;
+            ">Aktualisieren</button>
+            <button onclick="this.closest('div').remove()" style="
+              background: transparent;
+              color: white;
+              border: 1px solid white;
+              padding: 0.5rem 1rem;
+              border-radius: 4px;
+              cursor: pointer;
+            ">Später</button>
+          </div>
+        `;
+        
+        document.body.appendChild(notification);
+      }
+      
+      // Update app
+      function updateApp() {
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+          window.location.reload();
+        }
+      }
+      
+      // Performance monitoring
+      window.addEventListener('load', () => {
+        // Web Vitals (basic implementation)
+        if ('PerformanceObserver' in window) {
+          try {
+            const observer = new PerformanceObserver((list) => {
+              list.getEntries().forEach((entry) => {
+                console.log('Performance:', entry.name, entry.duration);
+                
+                // Send to analytics if available
+                if (window.gtag && entry.duration > 1000) {
+                  window.gtag('event', 'page_load_slow', {
+                    event_category: 'Performance',
+                    event_label: entry.name,
+                    value: Math.round(entry.duration)
+                  });
+                }
+              });
+            });
+            
+            observer.observe({ entryTypes: ['navigation', 'largest-contentful-paint'] });
+          } catch (error) {
+            console.warn('Performance observer failed:', error);
+          }
+        }
+      });
+      
+      // Error tracking
+      window.addEventListener('error', (e) => {
+        console.error('Global error:', e.error);
+        
+        if (window.gtag) {
+          window.gtag('event', 'javascript_error', {
+            event_category: 'Error',
+            event_label: e.error?.message || 'Unknown error',
+            non_interaction: true
+          });
+        }
+      });
+      
+      window.addEventListener('unhandledrejection', (e) => {
+        console.error('Unhandled promise rejection:', e.reason);
+        
+        if (window.gtag) {
+          window.gtag('event', 'promise_rejection', {
+            event_category: 'Error',
+            event_label: e.reason?.message || 'Promise rejection',
+            non_interaction: true
+          });
+        }
+      });
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

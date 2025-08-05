@@ -8,47 +8,104 @@ interface MockWebSocketSubscription {
   callback: (data: unknown) => void;
 }
 
-class MockWebSocketService implements IWebSocketService {
+export class MockWebSocketService implements IWebSocketService {
   private subscriptions: MockWebSocketSubscription[] = [];
   public isConnected: boolean = false;
   private connectionListeners: Array<(connected: boolean) => void> = [];
   private simulationInterval: ReturnType<typeof setInterval> | null = null;
   private connectionTimeout: ReturnType<typeof setTimeout> | null = null;
+  private isDestroyed = false;
+  private allTimers: Set<ReturnType<typeof setTimeout | typeof setInterval>> = new Set();
 
   connect(): void {
+    if (this.isDestroyed) {
+      logger.warn('Cannot connect - Mock WebSocket service has been destroyed');
+      return;
+    }
+
     if (this.isConnected) {
       return;
     }
 
     logger.info('Mock WebSocket connecting...');
     
+    // Clear any existing connection timeout
+    this.clearConnectionTimeout();
+    
     // Simulate connection delay
     this.connectionTimeout = setTimeout(() => {
+      if (this.isDestroyed) return;
       this.isConnected = true;
       logger.info('Mock WebSocket connected');
       this.notifyConnectionListeners(true);
       this.startSimulation();
     }, 500 + Math.random() * 1000); // 0.5-1.5s delay
+    
+    this.allTimers.add(this.connectionTimeout);
   }
 
   disconnect(): void {
+    this.cleanup();
+  }
+
+  destroy(): void {
+    this.isDestroyed = true;
+    this.cleanup();
+    this.connectionListeners.length = 0; // Clear all connection listeners
+    logger.info('Mock WebSocket service destroyed');
+  }
+
+  private cleanup(): void {
+    this.clearConnectionTimeout();
+    this.clearSimulationInterval();
+    this.clearAllTimers();
+    
+    this.isConnected = false;
+    
+    // Properly clear subscriptions
+    this.subscriptions.forEach(sub => {
+      // Clear any potential references
+      sub.callback = () => {}; // Replace with no-op to avoid memory leaks
+    });
+    this.subscriptions.length = 0; // More explicit clearing
+    
+    this.notifyConnectionListeners(false);
+    logger.info('Mock WebSocket disconnected and cleaned up');
+  }
+
+  private clearConnectionTimeout(): void {
     if (this.connectionTimeout) {
       clearTimeout(this.connectionTimeout);
+      this.allTimers.delete(this.connectionTimeout);
       this.connectionTimeout = null;
     }
+  }
 
+  private clearSimulationInterval(): void {
     if (this.simulationInterval) {
       clearInterval(this.simulationInterval);
+      this.allTimers.delete(this.simulationInterval);
       this.simulationInterval = null;
     }
+  }
 
-    this.isConnected = false;
-    this.subscriptions = [];
-    this.notifyConnectionListeners(false);
-    logger.info('Mock WebSocket disconnected');
+  private clearAllTimers(): void {
+    this.allTimers.forEach(timer => {
+      if (typeof timer === 'number') {
+        // Could be either setTimeout or setInterval ID
+        clearTimeout(timer);
+        clearInterval(timer);
+      }
+    });
+    this.allTimers.clear();
   }
 
   subscribe(type: string, callback: (data: unknown) => void): string {
+    if (this.isDestroyed) {
+      logger.warn('Cannot subscribe - Mock WebSocket service is destroyed');
+      return '';
+    }
+
     const id = `mock_${type}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     this.subscriptions.push({
@@ -62,15 +119,26 @@ class MockWebSocketService implements IWebSocketService {
   }
 
   unsubscribe(id: string): void {
+    if (this.isDestroyed) {
+      return;
+    }
+
     const index = this.subscriptions.findIndex(sub => sub.id === id);
     if (index !== -1) {
       const subscription = this.subscriptions[index];
+      // Clear callback to prevent memory leaks
+      subscription.callback = () => {};
       this.subscriptions.splice(index, 1);
       logger.info('Mock WebSocket subscription removed', { type: subscription.type, id });
     }
   }
 
   send(message: WebSocketMessage): void {
+    if (this.isDestroyed) {
+      logger.warn('Cannot send message - Mock WebSocket service is destroyed');
+      return;
+    }
+
     if (!this.isConnected) {
       logger.warn('Mock WebSocket not connected. Message not sent', { message });
       return;
@@ -79,16 +147,30 @@ class MockWebSocketService implements IWebSocketService {
     logger.info('Mock WebSocket message sent', { type: message.type, payload: message.payload });
     
     // Simulate server response for certain message types
-    setTimeout(() => {
-      this.simulateServerResponse(message);
+    const responseTimer = setTimeout(() => {
+      if (!this.isDestroyed) {
+        this.simulateServerResponse(message);
+      }
+      this.allTimers.delete(responseTimer);
     }, 100 + Math.random() * 200);
+    
+    this.allTimers.add(responseTimer);
   }
 
   onConnectionChange(callback: (connected: boolean) => void): () => void {
+    if (this.isDestroyed) {
+      logger.warn('Cannot add connection listener - Mock WebSocket service is destroyed');
+      return () => {}; // Return no-op unsubscribe function
+    }
+
     this.connectionListeners.push(callback);
     
     // Immediately call with current status
-    callback(this.isConnected);
+    try {
+      callback(this.isConnected);
+    } catch (error) {
+      logger.error('Error in mock connection listener during registration', error as Error);
+    }
     
     // Return unsubscribe function
     return () => {
@@ -114,15 +196,31 @@ class MockWebSocketService implements IWebSocketService {
   }
 
   private startSimulation(): void {
+    if (this.isDestroyed) {
+      return;
+    }
+
+    // Clear any existing simulation
+    this.clearSimulationInterval();
+    
     // Send periodic updates to simulate real-time data
     this.simulationInterval = setInterval(() => {
-      this.sendRandomUpdates();
+      if (!this.isDestroyed) {
+        this.sendRandomUpdates();
+      }
     }, 3000 + Math.random() * 2000); // Every 3-5 seconds
+    
+    this.allTimers.add(this.simulationInterval);
 
     // Send initial data
-    setTimeout(() => {
-      this.sendInitialData();
+    const initialDataTimer = setTimeout(() => {
+      if (!this.isDestroyed) {
+        this.sendInitialData();
+      }
+      this.allTimers.delete(initialDataTimer);
     }, 1000);
+    
+    this.allTimers.add(initialDataTimer);
   }
 
   private sendInitialData(): void {
@@ -287,27 +385,42 @@ class MockWebSocketService implements IWebSocketService {
 
   // Configuration methods for testing
   setUpdateInterval(intervalMs: number): void {
-    if (this.simulationInterval) {
-      clearInterval(this.simulationInterval);
+    if (this.isDestroyed) {
+      return;
     }
+
+    this.clearSimulationInterval();
     
     if (this.isConnected && intervalMs > 0) {
       this.simulationInterval = setInterval(() => {
-        this.sendRandomUpdates();
+        if (!this.isDestroyed) {
+          this.sendRandomUpdates();
+        }
       }, intervalMs);
+      
+      this.allTimers.add(this.simulationInterval);
     }
   }
 
   simulateConnectionLoss(): void {
+    if (this.isDestroyed) {
+      return;
+    }
+
     if (this.isConnected) {
       logger.warn('Simulating connection loss');
       this.disconnect();
       
       // Automatically reconnect after a delay
-      setTimeout(() => {
-        logger.info('Simulating automatic reconnection');
-        this.connect();
+      const reconnectTimer = setTimeout(() => {
+        if (!this.isDestroyed) {
+          logger.info('Simulating automatic reconnection');
+          this.connect();
+        }
+        this.allTimers.delete(reconnectTimer);
       }, 2000 + Math.random() * 3000);
+      
+      this.allTimers.add(reconnectTimer);
     }
   }
 

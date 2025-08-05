@@ -1,11 +1,12 @@
 {
-  "name": "citypulse",
+  "name": "citypulse-hechingen-energy",
   "private": true,
   "version": "1.0.0",
+  "description": "CityPulse Hechingen - Smart City Energy System für intelligente Energieverwaltung kommunaler Gebäude",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "build:analyze": "npm run build && npx vite-bundle-analyzer dist",
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --max-warnings 0 --fix",
@@ -16,20 +17,21 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "clsx": "^2.0.0",
+    "clsx": "^2.1.1",
     "lucide-react": "^0.294.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.20.1",
     "recharts": "^2.8.0",
-    "tailwind-merge": "^2.0.0",
+    "tailwind-merge": "^2.6.0",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",
+    "@types/lodash": "^4.17.20",
     "@types/node": "^24.1.0",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",

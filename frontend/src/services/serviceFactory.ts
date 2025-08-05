@@ -1,9 +1,12 @@
 import { ServiceFactory, IAPIService, IWebSocketService, MockConfig } from '@/types/api';
 import { mockAPIService } from './mock/mockApiService';
 import { mockWebSocketService } from './mock/mockWebSocketService';
+import { secureAPIService } from './api/secureApiService';
+import { enhancedApiService } from './api/enhancedApiService';
 import { realAPIService } from './api/realApiService';
 import { realWebSocketService } from './api/realWebSocketService';
 import { logger } from '@/utils/logger';
+import { createManagedWebSocketService } from '@/utils/websocket-manager';
 
 class DefaultServiceFactory implements ServiceFactory {
   private mockConfig: MockConfig;
@@ -65,18 +68,27 @@ class DefaultServiceFactory implements ServiceFactory {
       
       return mockAPIService;
     } else {
-      logger.info('Using Real API Service');
-      return realAPIService;
+      logger.info('Using Enhanced API Service with comprehensive error handling, retry logic, and caching');
+      // Use enhanced API service for production with all improvements
+      return enhancedApiService;
     }
   }
 
   createWebSocketService(): IWebSocketService {
     if (this.mockConfig.useMockData) {
       logger.info('Using Mock WebSocket Service');
-      return mockWebSocketService;
+      // For testing, return the original service directly
+      if (import.meta.env.MODE === 'test') {
+        return mockWebSocketService;
+      }
+      return createManagedWebSocketService('mock-websocket', () => mockWebSocketService);
     } else {
       logger.info('Using Real WebSocket Service');
-      return realWebSocketService;
+      // For testing, return the original service directly
+      if (import.meta.env.MODE === 'test') {
+        return realWebSocketService;
+      }
+      return createManagedWebSocketService('real-websocket', () => realWebSocketService);
     }
   }
 
@@ -155,10 +167,10 @@ export const webSocketService = serviceFactory.createWebSocketService();
 // Development tools (only available in development)
 if (import.meta.env.DEV) {
   // Expose factory to window for debugging
-  (window as any).serviceFactory = serviceFactory;
+  (window as unknown as Record<string, unknown>).serviceFactory = serviceFactory;
   
   // Add convenient debug functions
-  (window as any).debugEnergy = {
+  (window as unknown as Record<string, unknown>).debugEnergy = {
     switchToMock: () => serviceFactory.switchToMockMode(),
     switchToReal: () => serviceFactory.switchToRealMode(),
     simulateIssues: (enabled: boolean = true) => serviceFactory.simulateNetworkIssues(enabled),

@@ -1,0 +1,1141 @@
+openapi: 3.0.3
+info:
+  title: CityPulse Energy Management API
+  description: Comprehensive API for CityPulse Energy Management System
+  version: 1.0.0
+  contact:
+    name: Marc (Backend Developer)
+    email: marc@citypulse.com
+
+servers:
+  - url: https://api.citypulse.com/v1
+    description: Production server
+  - url: http://localhost:8000/v1
+    description: Development server
+
+security:
+  - bearerAuth: []
+
+paths:
+  # Authentication Endpoints
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      responses:
+        '200':
+          description: Logout successful
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  # User Management
+  /users/profile:
+    get:
+      tags:
+        - Users
+      summary: Get current user profile
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  # Buildings Management
+  /buildings:
+    get:
+      tags:
+        - Buildings
+      summary: Get all buildings
+      parameters:
+        - name: city
+          in: query
+          schema:
+            type: string
+            default: hechingen
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [online, offline, maintenance]
+      responses:
+        '200':
+          description: List of buildings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Building'
+
+  /buildings/{id}:
+    get:
+      tags:
+        - Buildings
+      summary: Get building by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Building details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+
+    patch:
+      tags:
+        - Buildings
+      summary: Update building
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildingUpdate'
+      responses:
+        '200':
+          description: Building updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+
+  /buildings/{id}/sensors:
+    get:
+      tags:
+        - Buildings
+        - Sensors
+      summary: Get all sensors for a building
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [energy, temperature, humidity, occupancy, security, water_quality, pump, pool, heritage, education, sports, services]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive, error]
+      responses:
+        '200':
+          description: List of sensors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sensor'
+
+  # Sensors Management
+  /sensors:
+    get:
+      tags:
+        - Sensors
+      summary: Get all sensors
+      parameters:
+        - name: building_id
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of sensors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sensors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Sensor'
+                  total:
+                    type: integer
+                  limit:
+                    type: integer
+                  offset:
+                    type: integer
+
+    post:
+      tags:
+        - Sensors
+      summary: Create new sensor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorCreate'
+      responses:
+        '201':
+          description: Sensor created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
+
+  /sensors/{id}:
+    get:
+      tags:
+        - Sensors
+      summary: Get sensor by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sensor details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
+
+    patch:
+      tags:
+        - Sensors
+      summary: Update sensor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorUpdate'
+      responses:
+        '200':
+          description: Sensor updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
+
+    delete:
+      tags:
+        - Sensors
+      summary: Delete sensor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Sensor deleted
+
+  /sensors/{id}/readings:
+    get:
+      tags:
+        - Sensors
+        - Energy Data
+      summary: Get sensor readings
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+      responses:
+        '200':
+          description: Sensor readings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SensorReading'
+
+    post:
+      tags:
+        - Sensors
+        - Energy Data
+      summary: Add sensor reading
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorReadingCreate'
+      responses:
+        '201':
+          description: Reading added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SensorReading'
+
+  # Energy Data & Analytics
+  /energy/consumption:
+    get:
+      tags:
+        - Energy Data
+      summary: Get energy consumption data
+      parameters:
+        - name: building_id
+          in: query
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: granularity
+          in: query
+          schema:
+            type: string
+            enum: [hour, day, week, month]
+            default: hour
+      responses:
+        '200':
+          description: Energy consumption data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnergyData'
+
+  /energy/production:
+    get:
+      tags:
+        - Energy Data
+      summary: Get energy production data (solar)
+      parameters:
+        - name: building_id
+          in: query
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: granularity
+          in: query
+          schema:
+            type: string
+            enum: [hour, day, week, month]
+            default: hour
+      responses:
+        '200':
+          description: Energy production data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EnergyData'
+
+  /analytics/dashboard:
+    get:
+      tags:
+        - Analytics
+      summary: Get dashboard statistics
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [day, week, month, year]
+            default: day
+      responses:
+        '200':
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+
+  /analytics/predictions:
+    get:
+      tags:
+        - Analytics
+      summary: Get energy predictions
+      parameters:
+        - name: building_id
+          in: query
+          schema:
+            type: string
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 7
+      responses:
+        '200':
+          description: Energy predictions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PredictionData'
+
+  /analytics/trends:
+    get:
+      tags:
+        - Analytics
+      summary: Get energy trends
+      parameters:
+        - name: building_id
+          in: query
+          schema:
+            type: string
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [week, month, quarter, year]
+            default: month
+      responses:
+        '200':
+          description: Energy trends
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TrendData'
+
+  # Alerts Management
+  /alerts:
+    get:
+      tags:
+        - Alerts
+      summary: Get all alerts
+      parameters:
+        - name: building_id
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [critical, warning, info]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [unread, read, resolved]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: List of alerts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Alert'
+
+    post:
+      tags:
+        - Alerts
+      summary: Create new alert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertCreate'
+      responses:
+        '201':
+          description: Alert created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alert'
+
+  /alerts/{id}:
+    patch:
+      tags:
+        - Alerts
+      summary: Update alert (mark as read/resolved)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertUpdate'
+      responses:
+        '200':
+          description: Alert updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alert'
+
+  # Admin Routes
+  /admin/users:
+    get:
+      tags:
+        - Admin
+      summary: Get all users (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [admin, manager, user]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '403':
+          description: Insufficient permissions
+
+    post:
+      tags:
+        - Admin
+      summary: Create new user (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /admin/buildings:
+    post:
+      tags:
+        - Admin
+        - Buildings
+      summary: Create new building (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildingCreate'
+      responses:
+        '201':
+          description: Building created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+
+# WebSocket Endpoints (documented for reference)
+  /ws/realtime:
+    get:
+      tags:
+        - WebSocket
+      summary: Real-time data WebSocket connection
+      description: |
+        WebSocket endpoint for real-time updates.
+        Supports channels: sensors, alerts, energy_data
+        
+        Example usage:
+        - ws://localhost:8000/ws/realtime?channel=sensors&building_id=rathaus-hechingen
+        - ws://localhost:8000/ws/realtime?channel=alerts
+        - ws://localhost:8000/ws/realtime?channel=energy_data&building_id=hallenbad-hechingen
+      responses:
+        '101':
+          description: WebSocket connection established
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Authentication Schemas
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+        user:
+          $ref: '#/components/schemas/User'
+
+    # User Schemas
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [admin, manager, user]
+        avatar:
+          type: string
+          format: url
+        created_at:
+          type: string
+          format: date-time
+        last_login:
+          type: string
+          format: date-time
+
+    UserCreate:
+      type: object
+      required:
+        - email
+        - name
+        - password
+        - role
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          enum: [admin, manager, user]
+        avatar:
+          type: string
+          format: url
+
+    # Building Schemas
+    Building:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [rathaus, realschule, grundschule, gymnasium, werkrealschule, sporthallen, hallenbad]
+        address:
+          type: string
+        capacity:
+          type: integer
+        status:
+          type: string
+          enum: [online, offline, maintenance]
+        last_update:
+          type: string
+          format: date-time
+        yearly_consumption:
+          type: number
+          description: kWh per year
+        savings_potential:
+          $ref: '#/components/schemas/SavingsPotential'
+        kwh_per_square_meter:
+          type: number
+        area:
+          type: number
+          description: Square meters
+        special_features:
+          type: object
+        energy_class:
+          type: string
+          enum: [A, B, C, D, E, F, G]
+        sensors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sensor'
+
+    BuildingCreate:
+      type: object
+      required:
+        - name
+        - type
+        - address
+        - capacity
+        - area
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [rathaus, realschule, grundschule, gymnasium, werkrealschule, sporthallen, hallenbad]
+        address:
+          type: string
+        capacity:
+          type: integer
+        area:
+          type: number
+        yearly_consumption:
+          type: number
+        energy_class:
+          type: string
+          enum: [A, B, C, D, E, F, G]
+        special_features:
+          type: object
+
+    BuildingUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        capacity:
+          type: integer
+        status:
+          type: string
+          enum: [online, offline, maintenance]
+        yearly_consumption:
+          type: number
+        energy_class:
+          type: string
+          enum: [A, B, C, D, E, F, G]
+
+    SavingsPotential:
+      type: object
+      properties:
+        kwh:
+          type: number
+        euro:
+          type: number
+        percentage:
+          type: number
+
+    # Sensor Schemas
+    Sensor:
+      type: object
+      properties:
+        id:
+          type: string
+        building_id:
+          type: string
+        type:
+          type: string
+          enum: [energy, temperature, humidity, occupancy, security, water_quality, pump, pool, heritage, education, sports, services, renovation, visitors]
+        name:
+          type: string
+        value:
+          type: number
+        unit:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, error]
+        last_reading:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+          properties:
+            location:
+              type: string
+            critical:
+              type: boolean
+            alert_threshold:
+              type: number
+            description:
+              type: string
+
+    SensorCreate:
+      type: object
+      required:
+        - building_id
+        - type
+        - name
+        - unit
+      properties:
+        building_id:
+          type: string
+        type:
+          type: string
+          enum: [energy, temperature, humidity, occupancy, security, water_quality, pump, pool, heritage, education, sports, services, renovation, visitors]
+        name:
+          type: string
+        unit:
+          type: string
+        metadata:
+          type: object
+
+    SensorUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+          enum: [active, inactive, error]
+        metadata:
+          type: object
+
+    SensorReading:
+      type: object
+      properties:
+        id:
+          type: string
+        sensor_id:
+          type: string
+        value:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+
+    SensorReadingCreate:
+      type: object
+      required:
+        - value
+      properties:
+        value:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+
+    # Energy Data Schemas
+    EnergyData:
+      type: object
+      properties:
+        id:
+          type: string
+        building_id:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        consumption:
+          type: number
+          description: kWh consumed
+        production:
+          type: number
+          description: kWh produced (solar)
+        efficiency:
+          type: number
+          description: Percentage efficiency
+        co2_saved:
+          type: number
+          description: kg CO2 saved
+
+    # Analytics Schemas
+    DashboardStats:
+      type: object
+      properties:
+        total_energy_produced:
+          type: number
+        total_energy_consumed:
+          type: number
+        total_co2_saved:
+          type: number
+        total_buildings:
+          type: integer
+        active_alerts:
+          type: integer
+        system_efficiency:
+          type: number
+        trends:
+          type: object
+          properties:
+            energy_production:
+              type: number
+            energy_consumption:
+              type: number
+            efficiency:
+              type: number
+            co2_savings:
+              type: number
+
+    PredictionData:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        predicted_consumption:
+          type: number
+        predicted_production:
+          type: number
+        confidence:
+          type: number
+          description: Confidence percentage
+
+    TrendData:
+      type: object
+      properties:
+        label:
+          type: string
+        value:
+          type: number
+        change:
+          type: number
+          description: Percentage change
+        trend:
+          type: string
+          enum: [up, down, stable]
+
+    # Alert Schemas
+    Alert:
+      type: object
+      properties:
+        id:
+          type: string
+        building_id:
+          type: string
+        type:
+          type: string
+          enum: [critical, warning, info]
+        title:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        is_read:
+          type: boolean
+        is_resolved:
+          type: boolean
+        priority:
+          type: string
+          enum: [critical, high, medium, low]
+        source:
+          type: string
+
+    AlertCreate:
+      type: object
+      required:
+        - building_id
+        - type
+        - title
+        - message
+        - priority
+      properties:
+        building_id:
+          type: string
+        type:
+          type: string
+          enum: [critical, warning, info]
+        title:
+          type: string
+        message:
+          type: string
+        priority:
+          type: string
+          enum: [critical, high, medium, low]
+        source:
+          type: string
+
+    AlertUpdate:
+      type: object
+      properties:
+        is_read:
+          type: boolean
+        is_resolved:
+          type: boolean
+
+    # Error Schemas
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Users
+    description: User management
+  - name: Buildings
+    description: Building management and data
+  - name: Sensors
+    description: Sensor management and readings
+  - name: Energy Data
+    description: Energy consumption and production data
+  - name: Analytics
+    description: Analytics and predictions
+  - name: Alerts
+    description: System alerts and notifications
+  - name: Admin
+    description: Administrative functions
+  - name: WebSocket
+    description: Real-time data connections

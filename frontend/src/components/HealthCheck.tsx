@@ -43,7 +43,7 @@ export default function HealthCheck() {
           },
           performance: {
             loadTime: performance.now() - startTime,
-            memoryUsage: (performance as any)?.memory?.usedJSHeapSize
+            memoryUsage: (performance as {memory?: {usedJSHeapSize: number}})?.memory?.usedJSHeapSize
           },
           buildInfo: {
             version: import.meta.env.VITE_APP_VERSION || '1.0.0',

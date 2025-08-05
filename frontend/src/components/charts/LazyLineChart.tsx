@@ -4,7 +4,7 @@ import LoadingSpinner from '../ui/LoadingSpinner';
 // Lazy load recharts as a single module
 const RechartsLineChart = lazy(() => 
   import('recharts').then(module => ({
-    default: function Chart({ data, height }: { data: any[], height: number }) {
+    default: function Chart({ data, height }: { data: Array<Record<string, unknown>>, height: number }) {
       return (
         <module.ResponsiveContainer width="100%" height={height}>
           <module.LineChart data={data}>
@@ -23,7 +23,7 @@ const RechartsLineChart = lazy(() =>
 );
 
 interface LazyLineChartProps {
-  data: any[];
+  data: Array<Record<string, unknown>>;
   height?: number;
 }
 

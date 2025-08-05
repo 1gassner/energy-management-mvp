@@ -1,0 +1,419 @@
+/* ========================================
+   PERFORMANCE-OPTIMIZED ANIMATIONS
+   CityPulse Hechingen - 60fps Guaranteed
+   ======================================== */
+
+/* === ANIMATION PERFORMANCE RULES === */
+
+/* Use transform and opacity for best performance */
+/* Avoid animating: width, height, padding, margin, border */
+/* Prefer: transform, opacity, filter */
+
+:root {
+  /* Performance-optimized easing functions */
+  --ease-out-cubic: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  --ease-in-out-cubic: cubic-bezier(0.645, 0.045, 0.355, 1.000);
+  --ease-out-quart: cubic-bezier(0.165, 0.840, 0.440, 1.000);
+  --ease-in-out-quart: cubic-bezier(0.770, 0.000, 0.175, 1.000);
+  --ease-bounce: cubic-bezier(0.680, -0.550, 0.265, 1.550);
+  
+  /* Performance timing constants */
+  --duration-instant: 50ms;
+  --duration-fast: 150ms;
+  --duration-medium: 250ms;
+  --duration-slow: 350ms;
+  --duration-extra-slow: 500ms;
+}
+
+/* === GPU-ACCELERATED ANIMATIONS === */
+
+/* Base performance optimization for animated elements */
+.gpu-accelerated {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+}
+
+/* Performance-optimized hover effects */
+.performance-hover {
+  transition: transform var(--duration-fast) var(--ease-out-cubic);
+  will-change: transform;
+}
+
+.performance-hover:hover {
+  transform: translateY(-2px) translateZ(0);
+}
+
+/* Scale animations with hardware acceleration */
+.performance-scale {
+  transition: transform var(--duration-fast) var(--ease-out-cubic);
+  will-change: transform;
+}
+
+.performance-scale:hover {
+  transform: scale(1.02) translateZ(0);
+}
+
+.performance-scale:active {
+  transform: scale(0.98) translateZ(0);
+  transition-duration: var(--duration-instant);
+}
+
+/* === OPTIMIZED KEYFRAME ANIMATIONS === */
+
+@keyframes fadeInOptimized {
+  from {
+    opacity: 0;
+    transform: translateZ(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateZ(0);
+  }
+}
+
+@keyframes slideInUpOptimized {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideInRightOptimized {
+  from {
+    opacity: 0;
+    transform: translate3d(20px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes scaleInOptimized {
+  from {
+    opacity: 0;
+    transform: scale3d(0.9, 0.9, 1);
+  }
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes pulseOptimized {
+  0%, 100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale3d(1.05, 1.05, 1);
+  }
+}
+
+@keyframes spinOptimized {
+  from {
+    transform: rotate3d(0, 0, 1, 0deg);
+  }
+  to {
+    transform: rotate3d(0, 0, 1, 360deg);
+  }
+}
+
+/* Glassmorphism-specific animations */
+@keyframes glassAppearOptimized {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale3d(0.95, 0.95, 1);
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+}
+
+@keyframes glassShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* === PERFORMANCE-OPTIMIZED UTILITY CLASSES === */
+
+.animate-fade-in-optimized {
+  animation: fadeInOptimized var(--duration-medium) var(--ease-out-cubic) forwards;
+}
+
+.animate-slide-up-optimized {
+  animation: slideInUpOptimized var(--duration-medium) var(--ease-out-cubic) forwards;
+}
+
+.animate-slide-right-optimized {
+  animation: slideInRightOptimized var(--duration-medium) var(--ease-out-cubic) forwards;
+}
+
+.animate-scale-in-optimized {
+  animation: scaleInOptimized var(--duration-medium) var(--ease-out-cubic) forwards;
+}
+
+.animate-pulse-optimized {
+  animation: pulseOptimized 2s var(--ease-in-out-cubic) infinite;
+}
+
+.animate-spin-optimized {
+  animation: spinOptimized 1s linear infinite;
+}
+
+.animate-glass-appear {
+  animation: glassAppearOptimized var(--duration-slow) var(--ease-out-cubic) forwards;
+}
+
+/* Loading spinner optimization */
+.loading-spinner-optimized {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: spinOptimized 1s linear infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* === REDUCED MOTION SUPPORT === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-pulse-optimized {
+    animation: none;
+  }
+  
+  .animate-spin-optimized {
+    animation: none;
+  }
+  
+  .performance-hover:hover,
+  .performance-scale:hover {
+    transform: none;
+  }
+}
+
+/* === LOW PERFORMANCE DEVICE OPTIMIZATIONS === */
+@media (max-width: 768px) {
+  /* Reduce animation complexity on mobile */
+  .animate-glass-appear {
+    animation: fadeInOptimized var(--duration-fast) var(--ease-out-cubic) forwards;
+  }
+  
+  .performance-hover,
+  .performance-scale {
+    transition-duration: var(--duration-instant);
+  }
+  
+  /* Disable expensive effects on low-end devices */
+  @media (max-resolution: 150dpi) {
+    .glass-animate-appear,
+    .animate-glass-appear {
+      animation: fadeInOptimized var(--duration-fast) ease-out forwards;
+    }
+    
+    .performance-hover:hover {
+      transform: translateY(-1px) translateZ(0);
+    }
+    
+    .performance-scale:hover {
+      transform: scale(1.01) translateZ(0);
+    }
+  }
+}
+
+/* === INTERSECTION OBSERVER ANIMATIONS === */
+/* For elements that should animate when in viewport */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  transition: opacity var(--duration-medium) var(--ease-out-cubic),
+              transform var(--duration-medium) var(--ease-out-cubic);
+  will-change: opacity, transform;
+}
+
+.animate-on-scroll.in-view {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Staggered animations for lists */
+.animate-stagger-1 { animation-delay: 0ms; }
+.animate-stagger-2 { animation-delay: 50ms; }
+.animate-stagger-3 { animation-delay: 100ms; }
+.animate-stagger-4 { animation-delay: 150ms; }
+.animate-stagger-5 { animation-delay: 200ms; }
+.animate-stagger-6 { animation-delay: 250ms; }
+
+/* === GLASS CARD PERFORMANCE OPTIMIZATIONS === */
+.glass-card-optimized {
+  transition: 
+    transform var(--duration-fast) var(--ease-out-cubic),
+    box-shadow var(--duration-fast) var(--ease-out-cubic),
+    opacity var(--duration-fast) var(--ease-out-cubic);
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.glass-card-optimized:hover {
+  transform: translate3d(0, -2px, 0) scale3d(1.01, 1.01, 1);
+}
+
+/* === LOADING STATE ANIMATIONS === */
+.skeleton-loading-optimized {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: glassShimmer 2s ease-in-out infinite;
+  will-change: background-position;
+}
+
+/* === MODAL AND OVERLAY ANIMATIONS === */
+.modal-enter {
+  opacity: 0;
+  transform: scale3d(0.9, 0.9, 1) translateZ(0);
+}
+
+.modal-enter-active {
+  opacity: 1;
+  transform: scale3d(1, 1, 1) translateZ(0);
+  transition: 
+    opacity var(--duration-medium) var(--ease-out-cubic),
+    transform var(--duration-medium) var(--ease-out-cubic);
+}
+
+.modal-exit {
+  opacity: 1;
+  transform: scale3d(1, 1, 1) translateZ(0);
+}
+
+.modal-exit-active {
+  opacity: 0;
+  transform: scale3d(0.9, 0.9, 1) translateZ(0);
+  transition: 
+    opacity var(--duration-fast) var(--ease-in-out-cubic),
+    transform var(--duration-fast) var(--ease-in-out-cubic);
+}
+
+/* === TOOLTIP ANIMATIONS === */
+.tooltip-enter {
+  opacity: 0;
+  transform: translate3d(0, 4px, 0) scale3d(0.9, 0.9, 1);
+}
+
+.tooltip-enter-active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+  transition: 
+    opacity var(--duration-fast) var(--ease-out-cubic),
+    transform var(--duration-fast) var(--ease-out-cubic);
+}
+
+/* === PERFORMANCE MONITORING === */
+.performance-debug {
+  position: relative;
+}
+
+.performance-debug::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  background: #00ff00;
+  border-radius: 50%;
+  opacity: 0;
+  animation: pulseOptimized 1s ease-in-out infinite;
+}
+
+/* Green dot indicates GPU acceleration is active */
+.gpu-accelerated.performance-debug::after {
+  opacity: 1;
+}
+
+/* === COMPONENT-SPECIFIC OPTIMIZATIONS === */
+
+/* Chart container animations */
+.chart-container-animated {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition: 
+    opacity var(--duration-medium) var(--ease-out-cubic) 0.1s,
+    transform var(--duration-medium) var(--ease-out-cubic) 0.1s;
+}
+
+.chart-container-animated.loaded {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Button press feedback */
+.button-press-feedback {
+  transition: transform var(--duration-instant) var(--ease-out-cubic);
+}
+
+.button-press-feedback:active {
+  transform: scale3d(0.95, 0.95, 1) translateZ(0);
+}
+
+/* Navigation item animations */
+.nav-item-optimized {
+  position: relative;
+  transition: transform var(--duration-fast) var(--ease-out-cubic);
+  will-change: transform;
+}
+
+.nav-item-optimized::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out-cubic);
+  border-radius: inherit;
+}
+
+.nav-item-optimized:hover::before {
+  opacity: 1;
+}
+
+.nav-item-optimized:hover {
+  transform: translate3d(0, -1px, 0);
+}

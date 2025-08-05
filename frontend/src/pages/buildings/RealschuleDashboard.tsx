@@ -1,35 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { serviceFactory } from '@/services/serviceFactory';
 import { Building, Sensor, EnergyData } from '@/types';
-import DashboardCard from '@/components/ui/DashboardCard';
+import EcoCard from '@/components/ui/EcoCard';
+import EcoKPICard from '@/components/ui/EcoKPICard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { LazyLineChart, LazyBarChart } from '../../components/charts';
 import { 
   School, 
   Award, 
-  Thermometer, 
   Users, 
   Zap,
-  TrendingUp,
-  BookOpen,
   AlertTriangle,
-  CheckCircle,
   Star,
-  Wrench,
-  Leaf,
-  Euro
+  Euro,
+  TrendingUp,
+  Trophy,
+  Target,
+  BookOpen,
+  Clock,
+  CheckCircle,
+  Leaf
 } from 'lucide-react';
 
 const RealschuleDashboard: React.FC = () => {
   const [building, setBuilding] = useState<Building | null>(null);
   const [sensors, setSensors] = useState<Sensor[]>([]);
-  const [energyData, setEnergyData] = useState<EnergyData[]>([]);
+  const [, setEnergyData] = useState<EnergyData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const apiService = serviceFactory.createAPIService();
 
-  const [kpis, setKpis] = useState({
+  const [, setKpis] = useState({
     energyIntensity: 50, // KfW-55 Standard!
     co2Emissions: 12.1,
     pvSelfConsumption: 89.2,
@@ -89,7 +91,7 @@ const RealschuleDashboard: React.FC = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [apiService]);
 
   if (loading) {
     return (
@@ -119,213 +121,271 @@ const RealschuleDashboard: React.FC = () => {
   const educationSensor = sensors.find(s => s.type === 'education');
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header mit KfW-55 Badge */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-              <School className="w-8 h-8 text-green-600" />
-              Realschule Hechingen
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
-              {building?.address || 'Weilheimer Straße 14, 72379 Hechingen'}
-            </p>
-            <div className="flex items-center gap-4 mt-3">
-              <div className="flex items-center gap-2 bg-green-100 dark:bg-green-900/20 px-3 py-1 rounded-full">
-                <Award className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                  KfW-55 STANDARD ERREICHT
-                </span>
+    <div className="min-h-screen bg-slate-950 relative">
+      {/* Eco Dark Background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 via-rose-500/5 to-pink-500/5" />
+        </div>
+      </div>
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Modern Education Header */}
+        <EcoCard variant="glass" size="lg" className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-4 mb-3">
+                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-red-400 to-rose-500 flex items-center justify-center shadow-lg">
+                  <School className="w-12 h-12 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-5xl font-bold bg-gradient-to-r from-red-300 via-rose-300 to-pink-300 bg-clip-text text-transparent mb-2">
+                    Realschule Hechingen
+                  </h1>
+                  <p className="text-slate-300 text-xl font-medium">
+                    Realschule • Baujahr: 1970 • Fläche: 7,000 m² • 800 Schüler
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900/20 px-3 py-1 rounded-full">
-                <Star className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                  BESTE ENERGIEEFFIZIENZ ALLER GEBÄUDE
-                </span>
+              <div className="flex items-center gap-4 mt-6">
+                <div className="px-5 py-3 bg-green-500/20 border border-green-400/30 rounded-2xl backdrop-blur-sm hover:bg-green-500/30 transition-all touch-friendly">
+                  <div className="flex items-center gap-3">
+                    <Award className="w-5 h-5 text-green-300" />
+                    <span className="text-green-200 font-semibold">KfW-55 STANDARD ERREICHT</span>
+                  </div>
+                </div>
+                <div className="px-5 py-3 bg-blue-500/20 border border-blue-400/30 rounded-2xl backdrop-blur-sm hover:bg-blue-500/30 transition-all touch-friendly">
+                  <div className="flex items-center gap-3">
+                    <Star className="w-5 h-5 text-blue-300" />
+                    <span className="text-blue-200 font-semibold">BESTE ENERGIEEFFIZIENZ</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <EcoCard variant="glass" size="sm">
+                <div className="text-sm text-slate-400">Energieklasse</div>
+                <div className="text-3xl font-bold text-green-400">A</div>
+                <div className="text-sm text-slate-400 mt-1">
+                  50 kWh/m² durch KfW-55
+                </div>
+              </EcoCard>
+            </div>
+          </div>
+        </EcoCard>
+
+        {/* Education-Focused Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <EcoKPICard
+            title="Energieintensität"
+            value="50.0"
+            unit="kWh/m²"
+            icon={Zap}
+            color="green"
+            trend={{
+              value: 25.3,
+              label: "KfW-55 Erfolg",
+              isPositive: true
+            }}
+            className="touch-friendly"
+          />
+          
+          <EcoKPICard
+            title="KfW-55 Effizienz"
+            value={(renovationSensor?.value || 95.2).toFixed(1)}
+            unit="%"
+            icon={Award}
+            color="green"
+            progress={renovationSensor?.value || 95.2}
+            trend={{
+              value: 12.5,
+              label: "Zielerfüllung",
+              isPositive: true
+            }}
+            className="touch-friendly"
+          />
+          
+          <EcoKPICard
+            title="Schüleranzahl"
+            value={(educationSensor?.value || 800).toString()}
+            unit="Schüler"
+            icon={Users}
+            color="blue"
+            trend={{
+              value: 2.1,
+              label: "vs. Vorjahr",
+              isPositive: true
+            }}
+            className="touch-friendly"
+          />
+          
+          <EcoKPICard
+            title="Energiekosten"
+            value="€650"
+            unit="/Monat"
+            icon={Euro}
+            color="green"
+            trend={{
+              value: 25.3,
+              label: "Einsparung",
+              isPositive: true
+            }}
+            className="touch-friendly"
+          />
+        </div>
+
+        {/* KfW-55 Success Story */}
+        <EcoCard variant="glass" size="lg" className="mb-8 touch-friendly">
+          <div className="flex items-start gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg">
+              <CheckCircle className="w-8 h-8 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-2xl font-bold text-white mb-3">
+                KfW-55 Standard erfolgreich erreicht - Energieeffizienz-Vorreiter
+              </h3>
+              <p className="text-slate-300 text-lg leading-relaxed mb-6">
+                Die Realschule ist das energieeffizienteste Gebäude in Hechingen mit vorbildlichen 50 kWh/m² nach der 2020er Sanierung.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 p-4 rounded-xl border border-green-500/30">
+                  <div className="text-green-400 font-bold text-lg">50</div>
+                  <div className="text-green-300 text-sm">kWh/m² erreicht</div>
+                </div>
+                <div className="bg-gradient-to-r from-blue-500/20 to-cyan-500/20 p-4 rounded-xl border border-blue-500/30">
+                  <div className="text-blue-400 font-bold text-lg">2020</div>
+                  <div className="text-blue-300 text-sm">Sanierung abgeschlossen</div>
+                </div>
+                <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 p-4 rounded-xl border border-orange-500/30">
+                  <div className="text-orange-400 font-bold text-lg">€7.455</div>
+                  <div className="text-orange-300 text-sm">Einsparung/Jahr</div>
+                </div>
+                <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-4 rounded-xl border border-purple-500/30">
+                  <div className="text-purple-400 font-bold text-lg">A</div>
+                  <div className="text-purple-300 text-sm">Energieklasse</div>
+                </div>
               </div>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-500">Energieklasse</div>
-            <div className="text-2xl font-bold text-green-600">A</div>
-            <div className="text-sm text-gray-500 mt-1">
-              50 kWh/m² durch KfW-55
+        </EcoCard>
+
+        {/* Education Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <EcoCard variant="glass" size="lg">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full" />
+              <h3 className="text-xl font-bold text-white">KfW-55 Energieverbrauch</h3>
             </div>
-          </div>
-        </div>
-      </div>
+            <div className="text-slate-300 text-sm mb-6">
+              Optimierter Verbrauch durch Sanierung
+            </div>
+            <LazyLineChart data={mockEnergyData} height={300} />
+          </EcoCard>
 
-      {/* KPI Cards mit KfW-55 Updates */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <DashboardCard
-          title="Stromverbrauch"
-          value={energySensor?.value || 39.9}
-          unit="kWh"
-          icon={<Zap className="w-6 h-6" />}
-          trend={{
-            value: 12.5,
-            isPositive: false
-          }}
-          color="green"
-        />
-        
-        <DashboardCard
-          title="KfW-55 Effizienz"
-          value={renovationSensor?.value || 95.2}
-          unit="%"
-          icon={<Award className="w-6 h-6" />}
-          color="green"
-        />
-        
-        <DashboardCard
-          title="Schüleranzahl"
-          value={educationSensor?.value || 800}
-          unit="Schüler"
-          icon={<Users className="w-6 h-6" />}
-          trend={{
-            value: 2.1,
-            isPositive: true
-          }}
-          color="blue"
-        />
-        
-        <DashboardCard
-          title="Energiekosten"
-          value="650"
-          unit="€/Monat"
-          icon={<Euro className="w-6 h-6" />}
-          trend={{
-            value: 25.3,
-            isPositive: false
-          }}
-          color="emerald"
-        />
-      </div>
-
-      {/* KfW-55 Success Story */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <Star className="w-5 h-5 text-green-600" />
-          KfW-55 Sanierungserfolg
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-green-600">50</div>
-            <div className="text-sm text-green-700 dark:text-green-300">kWh/m² erreicht</div>
-            <div className="text-xs text-gray-500 mt-1">KfW-55 Standard</div>
-          </div>
-          <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">2020</div>
-            <div className="text-sm text-blue-700 dark:text-blue-300">Sanierung abgeschlossen</div>
-            <div className="text-xs text-gray-500 mt-1">Modernste Technik</div>
-          </div>
-          <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-orange-600">€7.455</div>
-            <div className="text-sm text-orange-700 dark:text-orange-300">Einsparung/Jahr</div>
-            <div className="text-xs text-gray-500 mt-1">Durch Effizienz</div>
-          </div>
-        </div>
-        
-        <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-          <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">
-            Sanierungsmaßnahmen 2020
-          </h4>
-          <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
-            <li>• Vollständige Gebäudedämmung nach KfW-55 Standard</li>
-            <li>• Neue dreifach verglaste Fenster</li>
-            <li>• Moderne Wärmepumpe mit Wärmerückgewinnung</li>
-            <li>• LED-Beleuchtung in allen Räumen</li>
-            <li>• Smart Building Management System</li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Energy Consumption Chart */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Energieverbrauch heute</h3>
-          <LazyLineChart data={mockEnergyData} height={250} />
+          <EcoCard variant="glass" size="lg">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full" />
+              <h3 className="text-xl font-bold text-white">Effizienz nach Bereichen</h3>
+            </div>
+            <div className="text-slate-300 text-sm mb-6">
+              Energieverbrauch nach Schul-bereichen
+            </div>
+            <LazyBarChart data={roomData.map(item => ({ name: item.room, value: item.consumption, target: item.target }))} height={300} />
+          </EcoCard>
         </div>
 
-        {/* Room-wise Consumption */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Verbrauch nach Bereichen</h3>
-          <LazyBarChart data={roomData.map(item => ({ name: item.room, value: item.consumption }))} height={250} />
-        </div>
-      </div>
+        {/* Education Management Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <EcoCard variant="glass" size="md">
+            <div className="flex items-center gap-3 mb-6">
+              <BookOpen className="w-5 h-5 text-green-400" />
+              <h3 className="text-lg font-semibold text-white">Schulbetrieb</h3>
+            </div>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-4 bg-green-500/20 rounded-xl border border-green-500/30">
+                  <div className="text-2xl font-bold text-green-400">800</div>
+                  <div className="text-sm text-slate-400">Schüler</div>
+                </div>
+                <div className="text-center p-4 bg-blue-500/20 rounded-xl border border-blue-500/30">
+                  <div className="text-2xl font-bold text-blue-400">28</div>
+                  <div className="text-sm text-slate-400">Klassen</div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
+                  <span className="text-sm font-medium text-slate-300">KfW-Standard</span>
+                  <span className="font-bold text-green-400">KfW-55</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
+                  <span className="text-sm font-medium text-slate-300">Baujahr/Sanierung</span>
+                  <span className="font-bold text-white">1970/2020</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
+                  <span className="text-sm font-medium text-slate-300">Nutzfläche</span>
+                  <span className="font-bold text-white">7.000 m²</span>
+                </div>
+              </div>
+            </div>
+          </EcoCard>
 
-      {/* Building Information */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Gebäudedaten</h3>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Baujahr</span>
-              <span className="font-medium">1970</span>
+          <EcoCard variant="glass" size="md">
+            <div className="flex items-center gap-3 mb-6">
+              <CheckCircle className="w-5 h-5 text-green-400" />
+              <h3 className="text-lg font-semibold text-white">KfW-55 Status</h3>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Nutzfläche</span>
-              <span className="font-medium">7.000 m²</span>
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3 p-3 bg-green-500/20 rounded-xl border border-green-500/30">
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <span className="text-sm text-green-300">KfW-55 Standard aktiv</span>
+                </div>
+                <div className="flex items-center space-x-3 p-3 bg-green-500/20 rounded-xl border border-green-500/30">
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <span className="text-sm text-green-300">Wärmepumpe optimal</span>
+                </div>
+                <div className="flex items-center space-x-3 p-3 bg-green-500/20 rounded-xl border border-green-500/30">
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <span className="text-sm text-green-300">Smart Building online</span>
+                </div>
+                <div className="flex items-center space-x-3 p-3 bg-green-500/20 rounded-xl border border-green-500/30">
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                  <span className="text-sm text-green-300">Beste Effizienz erreicht</span>
+                </div>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">KfW-Standard</span>
-              <span className="font-medium text-green-600">KfW-55</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Heizung</span>
-              <span className="font-medium">Wärmepumpe</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 dark:text-gray-400">Schüleranzahl</span>
-              <span className="font-medium">800</span>
-            </div>
-          </div>
-        </div>
+          </EcoCard>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Status</h3>
-          <div className="space-y-3">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-gray-600 dark:text-gray-400">KfW-55 Standard aktiv</span>
+          <EcoCard variant="glass" size="md">
+            <div className="flex items-center gap-3 mb-6">
+              <Trophy className="w-5 h-5 text-orange-400" />
+              <h3 className="text-lg font-semibold text-white">Sanierungserfolg</h3>
             </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-gray-600 dark:text-gray-400">Wärmepumpe optimal</span>
+            <div className="space-y-4">
+              <div className="p-4 bg-green-500/20 rounded-xl border border-green-500/30">
+                <h4 className="font-medium text-green-300 mb-2">
+                  Sanierungsmaßnahmen 2020
+                </h4>
+                <div className="text-sm text-green-400">
+                  • Vollständige Gebäudedämmung<br/>
+                  • Dreifach verglaste Fenster<br/>
+                  • Moderne Wärmepumpe<br/>
+                  • LED-Beleuchtung<br/>
+                  • Smart Building System
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="text-center p-3 bg-orange-500/20 rounded-xl border border-orange-500/30">
+                  <div className="text-xl font-bold text-orange-400">€7.455</div>
+                  <div className="text-xs text-slate-400">Einsparung/Jahr</div>
+                </div>
+                <div className="text-center p-3 bg-green-500/20 rounded-xl border border-green-500/30">
+                  <div className="text-xl font-bold text-green-400">40%</div>
+                  <div className="text-xs text-slate-400">Effizienz-Steigerung</div>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-gray-600 dark:text-gray-400">Smart Building online</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-gray-600 dark:text-gray-400">Beste Effizienz erreicht</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Letzte Aktivitäten</h3>
-          <div className="space-y-3">
-            <div className="text-sm">
-              <div className="font-medium">11:45</div>
-              <div className="text-gray-600 dark:text-gray-400">KfW-55 Effizienz bestätigt</div>
-            </div>
-            <div className="text-sm">
-              <div className="font-medium">09:30</div>
-              <div className="text-gray-600 dark:text-gray-400">Wärmepumpe optimiert</div>
-            </div>
-            <div className="text-sm">
-              <div className="font-medium">07:30</div>
-              <div className="text-gray-600 dark:text-gray-400">Smart System aktiviert</div>
-            </div>
-            <div className="text-sm">
-              <div className="font-medium">06:00</div>
-              <div className="text-gray-600 dark:text-gray-400">Heizung energieeffizient gestartet</div>
-            </div>
-          </div>
+          </EcoCard>
         </div>
       </div>
     </div>

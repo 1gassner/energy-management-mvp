@@ -4,7 +4,7 @@ import LoadingSpinner from '../ui/LoadingSpinner';
 // Lazy load recharts as a single module
 const RechartsBarChart = lazy(() => 
   import('recharts').then(module => ({
-    default: function Chart({ data, height, dataKey, color }: { data: any[], height: number, dataKey: string, color: string }) {
+    default: function Chart({ data, height, dataKey, color }: { data: Array<Record<string, unknown>>, height: number, dataKey: string, color: string }) {
       return (
         <module.ResponsiveContainer width="100%" height={height}>
           <module.BarChart data={data}>
@@ -21,7 +21,7 @@ const RechartsBarChart = lazy(() =>
 );
 
 interface LazyBarChartProps {
-  data: any[];
+  data: Array<Record<string, unknown>>;
   height?: number;
   dataKey?: string;
   color?: string;

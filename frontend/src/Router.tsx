@@ -1,14 +1,18 @@
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { PermissionService, UserRole, Permission } from '@/types/permissions';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 // Lazy load components
 const Login = lazy(() => import('@/pages/auth/Login'));
 const Register = lazy(() => import('@/pages/auth/Register'));
+const SecureLogin = lazy(() => import('@/components/auth/SecureLogin'));
+const SecureRegister = lazy(() => import('@/components/auth/SecureRegister'));
+const PublicDemo = lazy(() => import('@/pages/public/PublicDemo'));
 const Dashboard = lazy(() => import('@/pages/dashboard/Dashboard'));
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
-const CityFlowDashboard = lazy(() => import('@/pages/EnergyFlowDashboard'));
+const CityEnergyDashboard = lazy(() => import('@/pages/CityEnergyDashboard'));
 const BuergerDashboard = lazy(() => import('@/pages/public/BuergerDashboard'));
 
 // Building Dashboards
@@ -17,6 +21,8 @@ const RealschuleDashboard = lazy(() => import('@/pages/buildings/RealschuleDashb
 const GrundschuleDashboard = lazy(() => import('@/pages/buildings/GrundschuleDashboard'));
 const HallenbadDashboard = lazy(() => import('@/pages/buildings/HallenbadDashboard'));
 const GymnasiumDashboard = lazy(() => import('@/pages/buildings/GymnasiumDashboard'));
+const WerkrealschuleDashboard = lazy(() => import('@/pages/buildings/WerkrealschuleDashboard'));
+const SporthallenDashboard = lazy(() => import('@/pages/buildings/SporthallenDashboard'));
 
 // Hechingen Overview
 const HechingenOverview = lazy(() => import('@/pages/dashboard/HechingenOverview'));
@@ -27,23 +33,58 @@ const ActiveAlerts = lazy(() => import('@/pages/alerts/ActiveAlerts'));
 
 // Analytics Components
 const AIAnalyticsDashboard = lazy(() => import('@/pages/analytics/AIAnalyticsDashboard'));
+const AdvancedAnalyticsDashboard = lazy(() => import('@/pages/analytics/AdvancedAnalyticsDashboard'));
+
+// Admin Components
+const SensorManagement = lazy(() => import('@/pages/admin/SensorManagement'));
+const DeviceManagement = lazy(() => import('@/pages/admin/DeviceManagement'));
+const UserManagement = lazy(() => import('@/pages/admin/UserManagement'));
+
+// Maintenance Components
+const MaintenanceScheduler = lazy(() => import('@/pages/maintenance/MaintenanceScheduler'));
+
+// Reports Components
+const ReportsManagement = lazy(() => import('@/pages/reports/ReportsManagement'));
+
+// Optimization Components
+const EnergyOptimizationEngine = lazy(() => import('@/pages/optimization/EnergyOptimizationEngine'));
+
+// Finance Components  
+const BudgetManagement = lazy(() => import('@/pages/finance/BudgetManagement'));
+
+// Planning Components
+const MobileAppPlan = lazy(() => import('@/pages/planning/MobileAppPlan'));
 
 // System Components
 const HealthCheck = lazy(() => import('@/components/HealthCheck'));
 
-// Protected Route Component
-const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ 
+// Protected Route Component with Enhanced Permission System
+const ProtectedRoute: React.FC<{ 
+  children: React.ReactNode; 
+  roles?: string[];
+  requirePermission?: Permission;
+}> = ({ 
   children, 
-  roles = [] 
+  roles = [],
+  requirePermission
 }) => {
   const { isAuthenticated, user } = useAuthStore();
   
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/secure-login" replace />;
   }
   
+  // Check role-based access
   if (roles.length > 0 && (!user?.role || !roles.includes(user.role))) {
     return <Navigate to="/dashboard" replace />;
+  }
+  
+  // Check permission-based access
+  if (requirePermission && user?.role) {
+    const hasPermission = PermissionService.hasPermission(user.role as UserRole, requirePermission);
+    if (!hasPermission) {
+      return <Navigate to="/dashboard" replace />;
+    }
   }
   
   return <>{children}</>;
@@ -53,7 +94,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> 
 const DefaultRedirect: React.FC = () => {
   const { isAuthenticated } = useAuthStore();
   
-  return <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />;
+  return <Navigate to={isAuthenticated ? "/dashboard" : "/secure-login"} replace />;
 };
 
 const Router: React.FC = () => {
@@ -66,15 +107,30 @@ const Router: React.FC = () => {
         </Suspense>
       } />
       
-      {/* Public Routes */}
-      <Route path="/login" element={
+      {/* Public Routes - Homepage redirects to BuergerDashboard */}
+      <Route path="/" element={
         <Suspense fallback={<LoadingSpinner />}>
-          <Login />
+          <BuergerDashboard />
         </Suspense>
       } />
-      <Route path="/register" element={
+      <Route path="/demo" element={
         <Suspense fallback={<LoadingSpinner />}>
-          <Register />
+          <PublicDemo />
+        </Suspense>
+      } />
+      {/* Legacy Auth Routes (redirect to secure versions) */}
+      <Route path="/login" element={<Navigate to="/secure-login" replace />} />
+      <Route path="/register" element={<Navigate to="/secure-register" replace />} />
+      
+      {/* Secure Auth Routes */}
+      <Route path="/secure-login" element={
+        <Suspense fallback={<LoadingSpinner />}>
+          <SecureLogin />
+        </Suspense>
+      } />
+      <Route path="/secure-register" element={
+        <Suspense fallback={<LoadingSpinner />}>
+          <SecureRegister />
         </Suspense>
       } />
       <Route path="/public" element={
@@ -95,7 +151,7 @@ const Router: React.FC = () => {
       <Route path="/energy-flow" element={
         <ProtectedRoute>
           <Suspense fallback={<LoadingSpinner />}>
-            <CityFlowDashboard />
+            <CityEnergyDashboard />
           </Suspense>
         </ProtectedRoute>
       } />
@@ -145,6 +201,20 @@ const Router: React.FC = () => {
           </Suspense>
         </ProtectedRoute>
       } />
+      <Route path="/buildings/werkrealschule" element={
+        <ProtectedRoute>
+          <Suspense fallback={<LoadingSpinner />}>
+            <WerkrealschuleDashboard />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/buildings/sporthallen" element={
+        <ProtectedRoute>
+          <Suspense fallback={<LoadingSpinner />}>
+            <SporthallenDashboard />
+          </Suspense>
+        </ProtectedRoute>
+      } />
 
       {/* Alert Routes */}
       <Route path="/alerts" element={
@@ -163,6 +233,13 @@ const Router: React.FC = () => {
       } />
 
       {/* Analytics Routes */}
+      <Route path="/analytics" element={
+        <ProtectedRoute roles={['admin', 'buergermeister', 'manager', 'gebaeudemanager']} requirePermission={Permission.VIEW_DETAILED_ANALYTICS}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <AdvancedAnalyticsDashboard />
+          </Suspense>
+        </ProtectedRoute>
+      } />
       <Route path="/analytics/ai" element={
         <ProtectedRoute>
           <Suspense fallback={<LoadingSpinner />}>
@@ -179,9 +256,105 @@ const Router: React.FC = () => {
           </Suspense>
         </ProtectedRoute>
       } />
+      <Route path="/admin/sensors" element={
+        <ProtectedRoute roles={['admin']}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <SensorManagement />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/buildings" element={
+        <ProtectedRoute roles={['admin']}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <AdminDashboard />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/users" element={
+        <ProtectedRoute roles={['admin']}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <UserManagement />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/devices" element={
+        <ProtectedRoute roles={['admin', 'gebaeudemanager']}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <DeviceManagement />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+
+      {/* Maintenance Routes */}
+      <Route path="/maintenance" element={
+        <ProtectedRoute roles={['admin', 'gebaeudemanager']}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <MaintenanceScheduler />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+
+      {/* Reports Routes */}
+      <Route path="/reports" element={
+        <ProtectedRoute roles={['admin', 'buergermeister', 'manager']}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <ReportsManagement />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+
+      {/* Optimization Routes */}
+      <Route path="/optimization" element={
+        <ProtectedRoute roles={['admin', 'buergermeister', 'manager', 'gebaeudemanager']} requirePermission={Permission.VIEW_DETAILED_ANALYTICS}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <EnergyOptimizationEngine />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+
+      {/* Finance Routes */}
+      <Route path="/budget" element={
+        <ProtectedRoute roles={['admin', 'buergermeister', 'manager']} requirePermission={Permission.VIEW_DETAILED_ANALYTICS}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <BudgetManagement />
+          </Suspense>
+        </ProtectedRoute>
+      } />
+
+      {/* Profile Route */}
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <Suspense fallback={<LoadingSpinner />}>
+            <div className="p-6">
+              <h1 className="text-2xl font-bold mb-4">Profil</h1>
+              <p>Profilseite wird implementiert...</p>
+            </div>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+
+      {/* Settings Route */}
+      <Route path="/settings" element={
+        <ProtectedRoute>
+          <Suspense fallback={<LoadingSpinner />}>
+            <div className="p-6">
+              <h1 className="text-2xl font-bold mb-4">Einstellungen</h1>
+              <p>Einstellungsseite wird implementiert...</p>
+            </div>
+          </Suspense>
+        </ProtectedRoute>
+      } />
+
+      {/* Planning Routes */}
+      <Route path="/planning/mobile-app" element={
+        <ProtectedRoute roles={['admin', 'buergermeister', 'manager']}>
+          <Suspense fallback={<LoadingSpinner />}>
+            <MobileAppPlan />
+          </Suspense>
+        </ProtectedRoute>
+      } />
 
       {/* Default redirect */}
-      <Route path="/" element={<DefaultRedirect />} />
       <Route path="*" element={<DefaultRedirect />} />
     </Routes>
   );

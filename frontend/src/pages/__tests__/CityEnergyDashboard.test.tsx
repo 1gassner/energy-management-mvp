@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen, act } from '@/test/utils'
-import EnergyFlowDashboard from '../EnergyFlowDashboard'
+import CityEnergyDashboard from '../CityEnergyDashboard'
 
 // Mock recharts components as they can be problematic in tests
 vi.mock('recharts', () => ({
@@ -15,7 +15,7 @@ vi.mock('recharts', () => ({
   ),
 }))
 
-describe('EnergyFlowDashboard', () => {
+describe('CityEnergyDashboard', () => {
 
   beforeEach(() => {
     vi.useFakeTimers()
@@ -33,14 +33,14 @@ describe('EnergyFlowDashboard', () => {
 
   describe('Initial Render', () => {
     it('should render the dashboard with correct title', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       expect(screen.getByText('Real-Time Energy Flow')).toBeInTheDocument()
       expect(screen.getByText('Monitor energy production, consumption, and distribution')).toBeInTheDocument()
     })
 
     it('should render all energy flow cards', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       expect(screen.getByText('PV Production')).toBeInTheDocument()
       expect(screen.getAllByText('Consumption')).toHaveLength(2) // Card + Chart label
@@ -49,7 +49,7 @@ describe('EnergyFlowDashboard', () => {
     })
 
     it('should display initial energy values', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       // Check for energy values (using regex to match decimal numbers)
       expect(screen.getByText(/145\.2 kW/)).toBeInTheDocument() // PV Production
@@ -59,7 +59,7 @@ describe('EnergyFlowDashboard', () => {
     })
 
     it('should render energy flow emojis', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       expect(screen.getByText('☀️')).toBeInTheDocument()
       expect(screen.getByText('⚡')).toBeInTheDocument()
@@ -70,7 +70,7 @@ describe('EnergyFlowDashboard', () => {
 
   describe('Energy Flow Visualization', () => {
     it('should render SVG energy flow diagram', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       const svgElement = screen.getByText('Energy Flow Visualization').closest('.bg-white')
       expect(svgElement).toBeInTheDocument()
@@ -82,7 +82,7 @@ describe('EnergyFlowDashboard', () => {
     })
 
     it('should display energy component labels in SVG', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       // SVG text elements should be present
       expect(screen.getByText('PV')).toBeInTheDocument()
@@ -92,7 +92,7 @@ describe('EnergyFlowDashboard', () => {
     })
 
     it('should have animated arrows in SVG', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       const svg = document.querySelector('svg')
       const animatedLines = svg?.querySelectorAll('line[marker-end]')
@@ -103,7 +103,7 @@ describe('EnergyFlowDashboard', () => {
 
   describe('Historical Chart', () => {
     it('should render chart section', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       expect(screen.getByText('24-Hour Energy Trends')).toBeInTheDocument()
       expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
@@ -111,7 +111,7 @@ describe('EnergyFlowDashboard', () => {
     })
 
     it('should render chart components', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       expect(screen.getByTestId('cartesian-grid')).toBeInTheDocument()
       expect(screen.getByTestId('x-axis')).toBeInTheDocument()
@@ -120,7 +120,7 @@ describe('EnergyFlowDashboard', () => {
     })
 
     it('should render all data lines', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       expect(screen.getByTestId('line-production')).toBeInTheDocument()
       expect(screen.getByTestId('line-consumption')).toBeInTheDocument()
@@ -128,7 +128,7 @@ describe('EnergyFlowDashboard', () => {
     })
 
     it('should display line names', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       expect(screen.getByText('Production')).toBeInTheDocument()
       expect(screen.getAllByText('Consumption')).toHaveLength(2) // Card + Chart label
@@ -138,7 +138,7 @@ describe('EnergyFlowDashboard', () => {
 
   describe('Real-time Updates', () => {
     it('should update energy values over time', async () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       // Get initial values
       const initialProduction = screen.getByText(/145\.2 kW/)
@@ -155,7 +155,7 @@ describe('EnergyFlowDashboard', () => {
     }, 3000)
 
     it('should handle multiple timer updates', async () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       // Advance timers multiple times
       await act(async () => {
@@ -170,7 +170,7 @@ describe('EnergyFlowDashboard', () => {
     }, 3000)
 
     it('should clean up interval on unmount', () => {
-      const { unmount } = render(<EnergyFlowDashboard />)
+      const { unmount } = render(<CityEnergyDashboard />)
       
       // clearInterval spy is already set up in beforeEach
       const clearIntervalSpy = vi.mocked(global.clearInterval)
@@ -183,7 +183,7 @@ describe('EnergyFlowDashboard', () => {
 
   describe('Data Generation', () => {
     it('should generate 24 hours of mock data', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       // The component should generate data for 24 hours
       // We can't directly test the internal state, but we can verify the chart renders
@@ -191,7 +191,7 @@ describe('EnergyFlowDashboard', () => {
     })
 
     it('should format time correctly', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       // Time should be formatted as German locale
       const xAxis = screen.getByTestId('x-axis')
@@ -201,20 +201,20 @@ describe('EnergyFlowDashboard', () => {
 
   describe('Responsive Design', () => {
     it('should have responsive grid layout', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       const gridContainer = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4')
       expect(gridContainer).toBeInTheDocument()
     })
 
     it('should have responsive chart container', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
     })
 
     it('should have responsive SVG', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       const svg = document.querySelector('svg')
       expect(svg).toHaveClass('w-full', 'max-w-2xl')
@@ -223,7 +223,7 @@ describe('EnergyFlowDashboard', () => {
 
   describe('Accessibility', () => {
     it('should have proper heading hierarchy', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       const mainHeading = screen.getByRole('heading', { level: 1 })
       expect(mainHeading).toHaveTextContent('Real-Time Energy Flow')
@@ -235,7 +235,7 @@ describe('EnergyFlowDashboard', () => {
     })
 
     it('should have semantic HTML structure', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       // Main container should be a main element or have proper structure
       const mainContent = document.querySelector('.min-h-screen')
@@ -243,7 +243,7 @@ describe('EnergyFlowDashboard', () => {
     })
 
     it('should provide descriptive text', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       expect(screen.getByText('Monitor energy production, consumption, and distribution')).toBeInTheDocument()
     })
@@ -253,14 +253,14 @@ describe('EnergyFlowDashboard', () => {
     it('should render without performance warnings', () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
       
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       expect(consoleSpy).not.toHaveBeenCalled()
       consoleSpy.mockRestore()
     })
 
     it('should handle rapid timer updates', async () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       // Simulate rapid updates
       await act(async () => {
@@ -276,7 +276,7 @@ describe('EnergyFlowDashboard', () => {
 
   describe('Error Handling', () => {
     it('should handle invalid energy values gracefully', async () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       // Component should handle edge cases in random value generation
       await act(async () => {
@@ -299,7 +299,7 @@ describe('EnergyFlowDashboard', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
       
       expect(() => {
-        render(<EnergyFlowDashboard />)
+        render(<CityEnergyDashboard />)
       }).not.toThrow()
       
       consoleSpy.mockRestore()
@@ -308,7 +308,7 @@ describe('EnergyFlowDashboard', () => {
 
   describe('Integration', () => {
     it('should work with theme classes', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       // Check for proper Tailwind classes
       const container = document.querySelector('.min-h-screen.bg-gray-50')
@@ -316,7 +316,7 @@ describe('EnergyFlowDashboard', () => {
     })
 
     it('should integrate with layout system', () => {
-      render(<EnergyFlowDashboard />)
+      render(<CityEnergyDashboard />)
       
       const maxWidthContainer = document.querySelector('.max-w-7xl.mx-auto')
       expect(maxWidthContainer).toBeInTheDocument()

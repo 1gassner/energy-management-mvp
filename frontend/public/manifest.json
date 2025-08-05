@@ -1,0 +1,60 @@
+{
+  "name": "CityPulse Hechingen - Smart Energy Management",
+  "short_name": "CityPulse",
+  "description": "Intelligente Energieverwaltung für kommunale Gebäude in Hechingen",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#1e40af",
+  "background_color": "#ffffff",
+  "lang": "de-DE",
+  "dir": "ltr",
+  "categories": ["utilities", "productivity", "business"],
+  "icons": [
+    {
+      "src": "hechingen-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+citypulse",
+      "url": "/dashboard?action=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/import",
+      "accept": {
+        "text/csv": [".csv"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": ["text/csv", "application/json"]
+        }
+      ]
+    }
+  }
+}

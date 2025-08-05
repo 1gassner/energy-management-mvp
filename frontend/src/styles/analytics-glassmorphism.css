@@ -1,0 +1,175 @@
+/* Analytics-Based Glassmorphism Design System for CityPulse */
+
+/* GLOBAL ANALYTICS THEME VARIABLES */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-shadow: 0 25px 45px rgba(0, 0, 0, 0.15);
+  --analytics-gradient: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+  --card-gradient: linear-gradient(135deg, rgba(30, 58, 138, 0.9) 0%, rgba(67, 56, 202, 0.8) 100%);
+}
+
+/* ANALYTICS-STYLE GLASSMORPHISM COMPONENTS */
+
+.analytics-glass-card {
+  background: var(--analytics-gradient);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 
+    0 25px 45px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kpi-glass-card {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.08) 0%, 
+    rgba(255, 255, 255, 0.04) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kpi-glass-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 
+    0 30px 60px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.chart-glass-container {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.06) 0%, 
+    rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* THEMED BUILDING CARDS */
+.card-heritage {
+  background: linear-gradient(135deg, 
+    rgba(180, 83, 9, 0.9) 0%, 
+    rgba(146, 64, 14, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 25px 45px rgba(180, 83, 9, 0.15);
+}
+
+.card-education-green {
+  background: linear-gradient(135deg, 
+    rgba(5, 150, 105, 0.9) 0%, 
+    rgba(6, 120, 86, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 25px 45px rgba(5, 150, 105, 0.15);
+}
+
+.card-education-blue {
+  background: linear-gradient(135deg, 
+    rgba(8, 145, 178, 0.9) 0%, 
+    rgba(14, 116, 144, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 25px 45px rgba(8, 145, 178, 0.15);
+}
+
+.card-education-purple {
+  background: linear-gradient(135deg, 
+    rgba(126, 34, 206, 0.9) 0%, 
+    rgba(101, 16, 168, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(196, 121, 255, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 25px 45px rgba(126, 34, 206, 0.15);
+}
+
+.card-aquatic {
+  background: linear-gradient(135deg, 
+    rgba(14, 165, 233, 0.9) 0%, 
+    rgba(59, 130, 246, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(125, 211, 252, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 25px 45px rgba(14, 165, 233, 0.15);
+}
+
+.card-sports {
+  background: linear-gradient(135deg, 
+    rgba(220, 38, 127, 0.9) 0%, 
+    rgba(190, 24, 93, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(251, 113, 133, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 25px 45px rgba(220, 38, 127, 0.15);
+}
+
+/* ENHANCED ANIMATIONS */
+@keyframes glassFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
+}
+
+.animate-glass-float {
+  animation: glassFloat 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* MOBILE OPTIMIZATION */
+@media (max-width: 768px) {
+  .analytics-glass-card,
+  .kpi-glass-card,
+  .chart-glass-container {
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+  }
+  
+  .kpi-glass-card {
+    padding: 1rem;
+  }
+  
+  .chart-glass-container {
+    padding: 1.5rem;
+  }
+}
+
+/* ACCESSIBILITY IMPROVEMENTS */
+@media (prefers-reduced-motion: reduce) {
+  .kpi-glass-card,
+  .analytics-glass-card,
+  .chart-glass-container {
+    transition: none;
+  }
+  
+  .animate-glass-float,
+  .animate-pulse-glow {
+    animation: none;
+  }
+}

@@ -1,0 +1,950 @@
+/* CityPulse Design System v2.0 - Modernized UI/UX */
+
+/* === HECHINGEN BRAND COLOR PALETTE === */
+:root {
+  /* Stadt Hechingen Official Colors */
+  --hechingen-primary-50: #eff6ff;
+  --hechingen-primary-100: #dbeafe;
+  --hechingen-primary-200: #bfdbfe;
+  --hechingen-primary-300: #93c5fd;
+  --hechingen-primary-400: #60a5fa;
+  --hechingen-primary-500: #2563eb;
+  --hechingen-primary-600: #1d4ed8;
+  --hechingen-primary-700: #1e40af;
+  --hechingen-primary-800: #1e3a8a;
+  --hechingen-primary-900: #172554;
+  
+  --hechingen-accent-50: #f8fafc;
+  --hechingen-accent-100: #f1f5f9;
+  --hechingen-accent-200: #e2e8f0;
+  --hechingen-accent-300: #cbd5e1;
+  --hechingen-accent-400: #94a3b8;
+  --hechingen-accent-500: #64748b;
+  --hechingen-accent-600: #475569;
+  --hechingen-accent-700: #334155;
+  --hechingen-accent-800: #1e293b;
+  --hechingen-accent-900: #0f172a;
+  
+  --hechingen-success-50: #f0fdf4;
+  --hechingen-success-100: #dcfce7;
+  --hechingen-success-200: #bbf7d0;
+  --hechingen-success-300: #86efac;
+  --hechingen-success-400: #4ade80;
+  --hechingen-success-500: #16a34a;
+  --hechingen-success-600: #15803d;
+  --hechingen-success-700: #166534;
+  --hechingen-success-800: #14532d;
+  --hechingen-success-900: #052e16;
+  
+  --hechingen-heritage-50: #fefce8;
+  --hechingen-heritage-100: #fef3c7;
+  --hechingen-heritage-200: #fde68a;
+  --hechingen-heritage-300: #fcd34d;
+  --hechingen-heritage-400: #fbbf24;
+  --hechingen-heritage-500: #eab308;
+  --hechingen-heritage-600: #ca8a04;
+  --hechingen-heritage-700: #a16207;
+  --hechingen-heritage-800: #854d0e;
+  --hechingen-heritage-900: #713f12;
+  /* Primary Colors - Based on successful Realschule/Gymnasium design */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* Success Colors - Green Palette */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+
+  /* Warning Colors - Orange/Yellow Palette */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+
+  /* Error Colors - Red Palette */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-900: #7f1d1d;
+
+  /* Neutral Colors - Improved Gray Scale */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+
+  /* Building-Specific Colors */
+  --color-education-500: #8b5cf6; /* Purple for Schools */
+  --color-education-100: #f3e8ff;
+  --color-pool-500: #06b6d4; /* Cyan for Pool */
+  --color-pool-100: #cffafe;
+  --color-sports-500: #f59e0b; /* Orange for Sports */
+  --color-sports-100: #fef3c7;
+  --color-heritage-500: #d97706; /* Gold for Heritage */
+  --color-heritage-100: #fef3c7;
+
+  /* Optimization Engine Colors */
+  --color-optimization-primary: #10b981; /* Emerald for energy efficiency */
+  --color-optimization-secondary: #3b82f6; /* Blue for analytics */
+  --color-optimization-accent: #f59e0b; /* Orange for alerts */
+  --color-optimization-bg: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+  --color-savings-green: #22c55e;
+  --color-efficiency-blue: #3b82f6;
+  --color-prediction-purple: #8b5cf6;
+
+  /* Advanced Glassmorphism Effects */
+  --backdrop-blur: blur(20px);
+  --backdrop-blur-strong: blur(40px);
+  --glassmorphism-bg: rgba(255, 255, 255, 0.1);
+  --glassmorphism-bg-strong: rgba(255, 255, 255, 0.15);
+  --glassmorphism-border: rgba(255, 255, 255, 0.2);
+  --glassmorphism-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  --glassmorphism-hover: rgba(255, 255, 255, 0.25);
+  
+  /* Dark Glassmorphism */
+  --glassmorphism-dark-bg: rgba(17, 25, 40, 0.15);
+  --glassmorphism-dark-border: rgba(255, 255, 255, 0.18);
+  --glassmorphism-dark-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  
+  /* Enhanced Shadows */
+  --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-glass: 0 8px 32px rgba(31, 38, 135, 0.37);
+  --shadow-colored: 0 20px 40px -12px rgba(37, 99, 235, 0.25);
+  --shadow-hechingen: 0 10px 25px -5px rgba(37, 99, 235, 0.15), 0 4px 6px -2px rgba(37, 99, 235, 0.05);
+  --shadow-hechingen-lg: 0 20px 40px -10px rgba(37, 99, 235, 0.2), 0 8px 16px -4px rgba(37, 99, 235, 0.1);
+
+  /* Typography Scale */
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+
+  /* Spacing Scale - 8px Grid System */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+
+  /* Border Radius */
+  --radius-sm: 0.25rem;   /* 4px */
+  --radius-base: 0.5rem;  /* 8px */
+  --radius-lg: 0.75rem;   /* 12px */
+  --radius-xl: 1rem;      /* 16px */
+  --radius-2xl: 1.5rem;   /* 24px */
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 200ms ease-in-out;
+  --transition-slow: 300ms ease-in-out;
+  --transition-transform: transform 200ms ease-in-out;
+  --transition-all: all 200ms ease-in-out;
+}
+
+/* === MODERN CARD SYSTEM === */
+.modern-card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg 
+         transition-all duration-300 hover:scale-[1.02] border border-gray-100 dark:border-gray-700;
+  backdrop-filter: var(--backdrop-blur);
+  background: var(--glassmorphism-bg);
+}
+
+.modern-card-header {
+  @apply p-6 border-b border-gray-100 dark:border-gray-700;
+}
+
+.modern-card-content {
+  @apply p-6;
+}
+
+/* === ADVANCED GLASSMORPHISM CARDS === */
+.modern-card-glassmorphism {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-card-glassmorphism:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
+}
+
+.modern-card-glassmorphism.dark {
+  background: linear-gradient(135deg, rgba(17, 25, 40, 0.15), rgba(17, 25, 40, 0.1));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Analytics-specific Glassmorphism */
+.analytics-glass-card {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.05));
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.analytics-glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+}
+
+.analytics-glass-card:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1));
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 20px 60px rgba(59, 130, 246, 0.25);
+}
+
+/* === METRIC CARDS === */
+.metric-card {
+  @apply p-6 transition-all duration-300;
+}
+
+.metric-card-value {
+  @apply text-3xl font-bold text-gray-900 dark:text-white;
+}
+
+.metric-card-trend-positive {
+  @apply text-green-600 bg-green-50 dark:bg-green-900/20 
+         px-2 py-1 rounded-full text-sm font-medium;
+}
+
+.metric-card-trend-negative {
+  @apply text-red-600 bg-red-50 dark:bg-red-900/20 
+         px-2 py-1 rounded-full text-sm font-medium;
+}
+
+/* === BUILDING-SPECIFIC CARDS === */
+.education-card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg 
+         transition-all duration-300 hover:scale-[1.02] border border-gray-100 dark:border-gray-700 border-l-4 border-purple-500;
+  background: linear-gradient(135deg, #f3e8ff 0%, #ffffff 100%);
+}
+
+.pool-card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg 
+         transition-all duration-300 hover:scale-[1.02] border border-gray-100 dark:border-gray-700 border-l-4 border-cyan-500;
+  background: linear-gradient(135deg, #cffafe 0%, #ffffff 100%);
+}
+
+.sports-card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg 
+         transition-all duration-300 hover:scale-[1.02] border border-gray-100 dark:border-gray-700 border-l-4 border-orange-500;
+  background: linear-gradient(135deg, #fef3c7 0%, #ffffff 100%);
+}
+
+.heritage-card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg 
+         transition-all duration-300 hover:scale-[1.02] border border-gray-100 dark:border-gray-700 border-l-4 border-yellow-600;
+  background: linear-gradient(135deg, #fef3c7 0%, #ffffff 100%);
+}
+
+/* === STATUS BADGES === */
+.status-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+}
+
+.status-badge-success {
+  @apply status-badge bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300;
+}
+
+.status-badge-warning {
+  @apply status-badge bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300;
+}
+
+.status-badge-error {
+  @apply status-badge bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300;
+}
+
+.status-badge-info {
+  @apply status-badge bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300;
+}
+
+/* === INTERACTIVE ELEMENTS === */
+.interactive-element {
+  @apply transition-all duration-200 hover:scale-105 active:scale-95;
+}
+
+.button-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg 
+         font-medium transition-all duration-200 hover:shadow-lg 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+.button-secondary {
+  @apply bg-gray-100 hover:bg-gray-200 text-gray-900 px-6 py-3 rounded-lg 
+         font-medium transition-all duration-200;
+}
+
+/* === GRID LAYOUTS === */
+.dashboard-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+}
+
+.content-grid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-8;
+}
+
+.metrics-grid {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-4;
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.4s ease-out;
+}
+
+.animate-pulse-subtle {
+  animation: pulse 2s infinite;
+}
+
+/* === RESPONSIVE UTILITIES === */
+.container-modern {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:grid-cols-8 py-8;
+}
+
+.page-header {
+  @apply mb-8 animate-fade-in-up;
+}
+
+.page-title {
+  @apply text-4xl font-bold text-gray-900 dark:text-white mb-2;
+}
+
+.page-subtitle {
+  @apply text-lg text-gray-600 dark:text-gray-400;
+}
+
+/* === DARK MODE OPTIMIZATIONS === */
+@media (prefers-color-scheme: dark) {
+  .modern-card {
+    background: rgba(31, 41, 55, 0.8);
+  }
+  
+  .glassmorphism-bg {
+    --glassmorphism-bg: rgba(31, 41, 55, 0.8);
+  }
+}
+
+/* === DARK THEME FOUNDATION === */
+:root {
+  /* Dark theme background colors */
+  --dark-bg-primary: #0f172a;    /* slate-900 */
+  --dark-bg-secondary: #1e293b;  /* slate-800 */
+  --dark-bg-tertiary: #334155;   /* slate-700 */
+  --dark-text-primary: #f8fafc;  /* slate-50 */
+  --dark-text-secondary: #cbd5e1; /* slate-300 */
+  --dark-border: #475569;         /* slate-600 */
+  
+  /* Glassmorphism for dark theme */
+  --dark-glass-bg: rgba(15, 23, 42, 0.4);
+  --dark-glass-border: rgba(248, 250, 252, 0.1);
+}
+
+/* Building-specific dark theme variants */
+.dark-theme-base {
+  @apply bg-gray-900 dark:bg-gray-900 min-h-screen;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.dark-card-base {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700;
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Building-specific dark cards */
+.rathaus-dark-card {
+  @apply dark-card-base;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border-left: 4px solid #3b82f6;
+}
+
+.gymnasium-dark-card {
+  @apply dark-card-base;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border-left: 4px solid #22c55e;
+}
+
+.werkrealschule-dark-card {
+  @apply dark-card-base;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border-left: 4px solid #f97316;
+}
+
+.sporthallen-dark-card {
+  @apply dark-card-base;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border-left: 4px solid #ef4444;
+}
+
+/* Dark theme headers */
+.dark-header {
+  @apply text-white;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Dark theme metric cards */
+.dark-metric-card {
+  @apply dark-card-base p-6;
+  transition: all 0.3s ease;
+}
+
+.dark-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark theme status badges */
+.dark-status-success {
+  @apply bg-green-900/30 text-green-300 border border-green-700;
+}
+
+.dark-status-warning {
+  @apply bg-yellow-900/30 text-yellow-300 border border-yellow-700;
+}
+
+.dark-status-error {
+  @apply bg-red-900/30 text-red-300 border border-red-700;
+}
+
+.dark-status-info {
+  @apply bg-blue-900/30 text-blue-300 border border-blue-700;
+}
+
+/* === ACCESSIBILITY === */
+.focus-visible:focus {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+}
+
+.sr-only {
+  @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+}
+
+/* === PRINT STYLES === */
+@media print {
+  .modern-card {
+    @apply shadow-none border border-gray-300;
+  }
+  
+  .animate-fade-in-up,
+  .animate-slide-in-right {
+    animation: none;
+  }
+}
+
+/* === PERFORMANCE OPTIMIZATIONS === */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-auto {
+  will-change: auto;
+}
+
+/* === LAYOUT SHIFT FIXES === */
+/* Prevent layout shifts by setting consistent dimensions */
+.kpi-glass-card {
+  min-height: 120px;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chart-glass-container {
+  min-height: 300px;
+  min-width: 100%;
+  position: relative;
+}
+
+.metric-card {
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modern-card {
+  min-height: 100px;
+}
+
+.status-badge {
+  min-width: 60px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Skeleton loaders to prevent layout shifts */
+.skeleton-loading {
+  background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-pulse 2s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Fixed aspect ratios for charts */
+.chart-container {
+  aspect-ratio: 16 / 9;
+  min-height: 250px;
+}
+
+.pie-chart-container {
+  aspect-ratio: 1 / 1;
+  min-height: 300px;
+}
+
+.bar-chart-container {
+  aspect-ratio: 4 / 3;
+  min-height: 300px;
+}
+
+/* === MOBILE OPTIMIZATIONS === */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    @apply grid-cols-1 gap-4;
+  }
+  
+  .content-grid {
+    @apply grid-cols-1 gap-6;
+  }
+  
+  .modern-card {
+    @apply hover:scale-100; /* Disable scale on mobile */
+  }
+  
+  /* Mobile layout shift fixes */
+  .kpi-glass-card {
+    min-height: 100px;
+    min-width: auto;
+  }
+  
+  .chart-container {
+    aspect-ratio: 4 / 3;
+    min-height: 200px;
+  }
+  
+  .pie-chart-container {
+    aspect-ratio: 1 / 1;
+    min-height: 250px;
+  }
+  
+  .bar-chart-container {
+    aspect-ratio: 16 / 10;
+    min-height: 200px;
+  }
+}
+
+/* === ADVANCED CHART CONTAINERS === */
+.chart-glass-container {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-glass-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.03), transparent 70%);
+  pointer-events: none;
+}
+
+/* KPI Glass Cards */
+.kpi-glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-glass-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, rgba(59, 130, 246, 0.3), rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+  border-radius: 18px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.kpi-glass-card:hover::before {
+  opacity: 1;
+}
+
+.kpi-glass-card:hover {
+  transform: translateY(-4px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.08));
+}
+
+/* === MODERN COMPONENT EXTENSIONS === */
+
+/* Modern Button Styles - Status-Based */
+.modern-button-primary {
+  @apply bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-medium;
+}
+.modern-button-secondary {
+  @apply bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 font-medium;
+}
+.modern-button-success {
+  @apply bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-medium;
+}
+.modern-button-danger {
+  @apply bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 font-medium;
+}
+
+/* === BUILDING THEME SPECIFIC STYLES === */
+
+/* Heritage Theme (Rathaus) - Amber/Gold */
+.card-heritage {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.15);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-heritage::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.4), transparent);
+}
+
+.card-heritage:hover {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.1) 100%);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 40px rgba(245, 158, 11, 0.25);
+}
+
+/* Education Theme - Green/Emerald (Gymnasium) */
+.card-education-green {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  box-shadow: 0 8px 32px rgba(34, 197, 94, 0.15);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-education-green::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.4), transparent);
+}
+
+.card-education-green:hover {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 40px rgba(34, 197, 94, 0.25);
+}
+
+/* Education Theme - Blue/Cyan (Grundschule) */
+.card-education-blue {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(14, 165, 233, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  box-shadow: 0 8px 32px rgba(6, 182, 212, 0.15);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-education-blue:hover {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(14, 165, 233, 0.1) 100%);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 40px rgba(6, 182, 212, 0.25);
+}
+
+/* Education Theme - Purple/Violet (Realschule) */
+.card-education-purple {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(124, 58, 237, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-education-purple:hover {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(124, 58, 237, 0.1) 100%);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.25);
+}
+
+/* Education Theme - Teal/Blue (Werkrealschule) */
+.card-education-teal {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(13, 148, 136, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(20, 184, 166, 0.2);
+  box-shadow: 0 8px 32px rgba(20, 184, 166, 0.15);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-education-teal:hover {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.15) 0%, rgba(13, 148, 136, 0.1) 100%);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 40px rgba(20, 184, 166, 0.25);
+}
+
+/* Aquatic Theme - Blue/Cyan (Hallenbad) */
+.card-aquatic {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(3, 105, 161, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  box-shadow: 0 8px 32px rgba(6, 182, 212, 0.15);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-aquatic::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(6, 182, 212, 0.03), transparent 60%);
+  pointer-events: none;
+}
+
+.card-aquatic:hover {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(3, 105, 161, 0.1) 100%);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 40px rgba(6, 182, 212, 0.25);
+}
+
+/* Sports Theme - Orange/Red (Sporthallen) */
+.card-sports {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  box-shadow: 0 8px 32px rgba(249, 115, 22, 0.15);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-sports:hover {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(239, 68, 68, 0.1) 100%);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 12px 40px rgba(249, 115, 22, 0.25);
+}
+
+/* Status Badge Styles */
+.status-badge-success {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
+}
+.status-badge-warning {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400;
+}
+.status-badge-danger {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400;
+}
+.status-badge-info {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400;
+}
+
+/* Modern Select Styles */
+.modern-select {
+  @apply px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200;
+}
+
+/* Modern Tab Button Styles */
+.modern-tab-button {
+  @apply px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200;
+}
+.modern-tab-button.active {
+  @apply bg-blue-600 text-white shadow-lg;
+}
+.modern-tab-button:not(.active) {
+  @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600;
+}
+
+/* === NAVIGATION FIXES === */
+.nav-link-fix {
+  @apply transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer;
+}
+
+.nav-link-fix:hover {
+  @apply shadow-lg;
+}
+
+/* === ENHANCED ANIMATIONS === */
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s infinite;
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+}
+
+/* === FOCUS RING UTILITY === */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}

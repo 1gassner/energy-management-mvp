@@ -2,7 +2,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { User, AuthState, LoginCredentials, RegisterData } from '@/types';
 import { notificationService } from '@/services/notification.service';
-import { apiService } from '@/services/serviceFactory';
+import { secureAPIService } from '@/services/api/secureApiService';
+import { securityService } from '@/services/securityService';
 
 interface AuthStore extends AuthState {
   // Actions
@@ -13,6 +14,10 @@ interface AuthStore extends AuthState {
   clearError: () => void;
   updateUser: (updates: Partial<User>) => void;
   initialize: () => Promise<void>;
+  
+  // Internal state for race condition prevention
+  _isInitializing: boolean;
+  _initializePromise: Promise<void> | null;
 }
 
 
@@ -24,16 +29,28 @@ export const useAuthStore = create<AuthStore>()(
       isAuthenticated: false,
       isLoading: false,
       error: null,
+      
+      // Internal state
+      _isInitializing: false,
+      _initializePromise: null,
 
       // Actions
       login: async (credentials: LoginCredentials) => {
+        const currentState = get();
+        
+        // Prevent multiple simultaneous login attempts
+        if (currentState.isLoading) {
+          return false;
+        }
+        
         set({ isLoading: true, error: null });
         
         try {
-          const response = await apiService.login(credentials);
+          // Optimistic update - clear any existing error immediately
+          set(state => ({ ...state, error: null }));
           
-          // Store token in localStorage
-          localStorage.setItem('auth_token', response.token);
+          // Use secure API service - token is now stored in httpOnly cookie
+          const response = await secureAPIService.login(credentials);
           
           set({
             user: response.user,
@@ -45,7 +62,7 @@ export const useAuthStore = create<AuthStore>()(
           notificationService.success(`Willkommen zurück, ${response.user.name}!`);
           return true;
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Anmeldung fehlgeschlagen';
+          const errorMessage = securityService.getSecureErrorMessage(error instanceof Error ? error : 'Anmeldung fehlgeschlagen');
           set({
             user: null,
             isAuthenticated: false,
@@ -59,13 +76,21 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       register: async (data: RegisterData) => {
+        const currentState = get();
+        
+        // Prevent multiple simultaneous registration attempts
+        if (currentState.isLoading) {
+          return false;
+        }
+        
         set({ isLoading: true, error: null });
         
         try {
-          const response = await apiService.register(data);
+          // Optimistic update - clear any existing error immediately
+          set(state => ({ ...state, error: null }));
           
-          // Store token in localStorage
-          localStorage.setItem('auth_token', response.token);
+          // Use secure API service - token is now stored in httpOnly cookie
+          const response = await secureAPIService.register(data);
           
           set({
             user: response.user,
@@ -77,7 +102,7 @@ export const useAuthStore = create<AuthStore>()(
           notificationService.success(`Willkommen ${response.user.name}! Ihr Account wurde erfolgreich erstellt.`);
           return true;
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Registrierung fehlgeschlagen';
+          const errorMessage = securityService.getSecureErrorMessage(error instanceof Error ? error : 'Registrierung fehlgeschlagen');
           set({
             user: null,
             isAuthenticated: false,
@@ -92,14 +117,11 @@ export const useAuthStore = create<AuthStore>()(
 
       logout: async () => {
         try {
-          await apiService.logout();
+          await secureAPIService.logout();
         } catch (error) {
           // Logout should always succeed locally even if server call fails
           console.warn('Server logout failed, continuing with local logout:', error);
         } finally {
-          // Remove token from localStorage
-          localStorage.removeItem('auth_token');
-          
           set({
             user: null,
             isAuthenticated: false,
@@ -112,16 +134,17 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       refreshUser: async () => {
-        const token = localStorage.getItem('auth_token');
-        if (!token) {
-          set({ user: null, isAuthenticated: false, isLoading: false, error: null });
+        const currentState = get();
+        
+        // Prevent multiple simultaneous refresh calls
+        if (currentState.isLoading || currentState._isInitializing) {
           return;
         }
-
+        
         set({ isLoading: true });
         
         try {
-          const user = await apiService.refreshUser();
+          const user = await secureAPIService.refreshUser();
           set({
             user,
             isAuthenticated: true,
@@ -129,8 +152,7 @@ export const useAuthStore = create<AuthStore>()(
             error: null,
           });
         } catch (error) {
-          // Clear both localStorage and persisted state
-          localStorage.removeItem('auth_token');
+          // Session expired or invalid - clear state
           set({
             user: null,
             isAuthenticated: false,
@@ -141,19 +163,28 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       initialize: async () => {
-        // Initialize auth state on app startup
-        const token = localStorage.getItem('auth_token');
-        const persistedState = JSON.parse(localStorage.getItem('auth-storage') || '{}');
+        const currentState = get();
         
-        if (token && persistedState.state?.user) {
-          // We have both token and persisted user, try to refresh
-          await get().refreshUser();
-        } else {
-          // Clear inconsistent state
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('auth-storage');
-          set({ user: null, isAuthenticated: false, isLoading: false, error: null });
+        // Prevent multiple simultaneous initialization calls
+        if (currentState._isInitializing || currentState._initializePromise) {
+          return currentState._initializePromise || Promise.resolve();
         }
+        
+        // Create and store initialization promise to prevent race conditions
+        const initPromise = (async () => {
+          set({ _isInitializing: true });
+          
+          try {
+            // Initialize auth state on app startup
+            // With httpOnly cookies, we just try to refresh user data
+            await get().refreshUser();
+          } finally {
+            set({ _isInitializing: false, _initializePromise: null });
+          }
+        })();
+        
+        set({ _initializePromise: initPromise });
+        return initPromise;
       },
 
       clearError: () => {
@@ -175,6 +206,7 @@ export const useAuthStore = create<AuthStore>()(
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
+        // Don't persist internal state to prevent stale race condition flags
       }),
     }
   )

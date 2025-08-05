@@ -1,0 +1,216 @@
+/* ========================================
+   Z-INDEX SCALE FOR CITYPULSE HECHINGEN
+   Consistent layering system
+   ======================================== */
+
+:root {
+  /* Z-Index Scale - Standardized layers */
+  --z-behind: -1;
+  --z-base: 0;
+  --z-content: 1;
+  --z-elevated: 10;
+  --z-sticky: 20;
+  --z-dropdown: 30;
+  --z-overlay: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-tooltip: 70;
+  --z-notification: 80;
+  --z-critical: 90;
+  --z-maximum: 100;
+}
+
+/* === COMPONENT Z-INDEX ASSIGNMENTS === */
+
+/* Background elements */
+.background-pattern {
+  z-index: var(--z-behind);
+}
+
+/* Base content */
+.content-area {
+  z-index: var(--z-base);
+}
+
+/* Cards and components */
+.glass-card-ultra-light,
+.glass-card-light,
+.glass-card-medium,
+.glass-card-strong,
+.glass-card-hechingen-primary,
+.glass-card-hechingen-success,
+.glass-card-hechingen-heritage {
+  z-index: var(--z-content);
+}
+
+/* Elevated elements */
+.modern-card:hover,
+.kpi-glass-card:hover,
+.analytics-glass-card:hover {
+  z-index: var(--z-elevated);
+}
+
+/* Navigation */
+.glass-nav {
+  z-index: var(--z-sticky);
+}
+
+.sidebar-container {
+  z-index: var(--z-sticky);
+}
+
+/* Dropdowns and menus */
+.glass-select-dropdown,
+#mobile-export-menu {
+  z-index: var(--z-dropdown);
+}
+
+.nav-dropdown,
+.user-menu-dropdown {
+  z-index: var(--z-dropdown);
+}
+
+/* Overlays */
+.glass-overlay {
+  z-index: var(--z-overlay);
+}
+
+.modal-backdrop {
+  z-index: var(--z-overlay);
+}
+
+/* Modals */
+.modal-container,
+.dialog-container {
+  z-index: var(--z-modal);
+}
+
+.accessibility-modal {
+  z-index: var(--z-modal);
+}
+
+/* Popovers */
+.popover-container,
+.dropdown-popover {
+  z-index: var(--z-popover);
+}
+
+/* Tooltips */
+.tooltip {
+  z-index: var(--z-tooltip);
+}
+
+.recharts-tooltip-wrapper {
+  z-index: var(--z-tooltip);
+}
+
+/* Notifications */
+.notification-container,
+.toast-container {
+  z-index: var(--z-notification);
+}
+
+.alert-banner {
+  z-index: var(--z-notification);
+}
+
+/* Critical elements */
+.loading-overlay,
+.error-boundary {
+  z-index: var(--z-critical);
+}
+
+.debug-panel {
+  z-index: var(--z-critical);
+}
+
+/* Maximum priority */
+.print-dialog,
+.screen-reader-announce {
+  z-index: var(--z-maximum);
+}
+
+/* === MOBILE SPECIFIC Z-INDEX === */
+@media (max-width: 768px) {
+  .mobile-sidebar {
+    z-index: var(--z-modal);
+  }
+  
+  .mobile-nav-overlay {
+    z-index: var(--z-overlay);
+  }
+  
+  .pull-to-refresh {
+    z-index: var(--z-notification);
+  }
+  
+  .mobile-tab-bar {
+    z-index: var(--z-sticky);
+  }
+}
+
+/* === FOCUS MANAGEMENT === */
+/* Ensure focused elements are above overlays */
+*:focus {
+  position: relative;
+  z-index: calc(var(--z-elevated) + 1);
+}
+
+/* Modal focus trap */
+.modal-container *:focus {
+  z-index: calc(var(--z-modal) + 1);
+}
+
+/* === DEBUGGING UTILITIES === */
+.debug-z-index {
+  position: relative;
+}
+
+.debug-z-index::after {
+  content: attr(data-z-index);
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 2px 4px;
+  font-size: 10px;
+  font-family: monospace;
+  border-radius: 2px;
+}
+
+/* === PRINT STYLES === */
+@media print {
+  /* Reset all z-indexes for print */
+  * {
+    z-index: auto !important;
+  }
+  
+  /* Hide overlays and modals in print */
+  .glass-overlay,
+  .modal-container,
+  .notification-container,
+  .tooltip {
+    display: none !important;
+  }
+}
+
+/* === BROWSER COMPATIBILITY === */
+/* Ensure stacking context is properly created */
+.glass-card-ultra-light,
+.glass-card-light,
+.glass-card-medium,
+.glass-card-strong,
+.modal-container,
+.glass-overlay,
+.sidebar-container {
+  position: relative;
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
+/* WebKit specific fixes */
+@supports (-webkit-backdrop-filter: blur(1px)) {
+  .glass-overlay {
+    -webkit-backdrop-filter: blur(20px);
+  }
+}

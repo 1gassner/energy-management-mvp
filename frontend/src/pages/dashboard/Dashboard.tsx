@@ -220,128 +220,159 @@ const Dashboard: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-96">
         <LoadingSpinner size="lg" text="Loading dashboard..." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Welcome back, {user?.name || 'User'}!
-              </h1>
-              <p className="text-gray-600 mt-2">
-                Monitor and manage your energy systems
-              </p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                <span className="text-sm text-gray-600">
-                  {isConnected ? 'Connected' : 'Disconnected'}
+    <div className="space-y-6">
+      {/* Modern Dashboard Header Card */}
+      <div className="glass-card-hechingen-primary p-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent mb-2">
+              Willkommen zurück, {user?.name || 'User'}!
+            </h1>
+            <p className="text-blue-100/80 text-lg">
+              Überwachen und verwalten Sie Ihre Energiesysteme
+            </p>
+            <div className="flex items-center gap-4 mt-4">
+              <div className="flex items-center gap-2">
+                <div className={`w-3 h-3 rounded-full animate-pulse ${isConnected ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                <span className="text-sm text-blue-200/80 font-medium">
+                  {isConnected ? 'Verbunden' : 'Getrennt'}
                 </span>
               </div>
               {stats && (
-                <div className={`text-sm font-medium ${getSystemStatusColor(stats.systemEfficiency)}`}>
+                <div className={`text-sm font-bold px-3 py-1 rounded-full backdrop-blur-sm ${
+                  stats.systemEfficiency >= 90 ? 'bg-green-500/20 text-green-300 border border-green-400/30' :
+                  stats.systemEfficiency >= 70 ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-400/30' :
+                  'bg-red-500/20 text-red-300 border border-red-400/30'
+                }`}>
                   System: {getSystemStatusText(stats.systemEfficiency)}
                 </div>
               )}
             </div>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {dashboardCards.filter(card => card.enabled).map((card, index) => (
-            <Link
-              key={index}
-              to={card.link}
-              className="block p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 relative"
-            >
-              <div className={`inline-flex p-3 rounded-lg ${card.color} text-white mb-4`}>
-                <span className="text-2xl">{card.icon}</span>
+          <div className="text-right">
+            <div className="glass-card-light p-6 rounded-2xl">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
+                <span className="text-white font-bold text-lg">CityPulse Online</span>
               </div>
-              {card.badge && (
-                <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {card.badge}
+              <div className="text-blue-200/80 text-sm mb-2">
+                Letztes Update: {new Date().toLocaleTimeString('de-DE')}
+              </div>
+              <div className="text-blue-300/80 text-xs">
+                Alle 7 Gebäude überwacht
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modern Dashboard Navigation Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {dashboardCards.filter(card => card.enabled).map((card, index) => (
+          <Link
+            key={index}
+            to={card.link}
+            className="block glass-card-medium group hover:scale-105 transition-all duration-300 relative"
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-xl backdrop-blur-sm border border-blue-400/30">
+                  <span className="text-2xl">{card.icon}</span>
                 </div>
-              )}
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {card.badge && (
+                  <div className="bg-red-500/20 text-red-300 text-xs px-3 py-1 rounded-full border border-red-400/30 font-bold">
+                    {card.badge}
+                  </div>
+                )}
+              </div>
+              <h3 className="text-lg font-bold text-white mb-2">
                 {card.title}
               </h3>
-              <p className="text-gray-600 text-sm">
+              <p className="text-blue-200/80 text-sm">
                 {card.description}
               </p>
-            </Link>
-          ))}
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="glass-card-medium p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-3 h-3 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full" />
+            <h2 className="text-xl font-bold text-white">
+              Schnell-Statistiken
+            </h2>
+          </div>
+          {stats ? (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl backdrop-blur-sm">
+                <span className="text-blue-200/80">Energie Produziert</span>
+                <span className="font-bold text-white">{stats.totalEnergyProduced.toFixed(0)} kWh</span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl backdrop-blur-sm">
+                <span className="text-blue-200/80">Energie Verbraucht</span>
+                <span className="font-bold text-white">{stats.totalEnergyConsumed.toFixed(0)} kWh</span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl backdrop-blur-sm">
+                <span className="text-blue-200/80">CO₂ Eingespart</span>
+                <span className="font-bold text-green-400">{stats.totalCO2Saved.toFixed(0)} kg</span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl backdrop-blur-sm">
+                <span className="text-blue-200/80">Aktive Alerts</span>
+                <span className={`font-bold ${stats.activeAlerts > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                  {stats.activeAlerts}
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl backdrop-blur-sm">
+                <span className="text-blue-200/80">System Effizienz</span>
+                <span className={`font-bold ${
+                  stats.systemEfficiency >= 90 ? 'text-green-400' :
+                  stats.systemEfficiency >= 70 ? 'text-yellow-400' : 'text-red-400'
+                }`}>
+                  {stats.systemEfficiency.toFixed(1)}%
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-4 bg-white/5 rounded-xl backdrop-blur-sm">
+                <span className="text-blue-200/80">Verbindungsstatus</span>
+                <span className={`font-bold ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
+                  {connectionState}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center text-blue-200/60">
+              <LoadingSpinner size="sm" text="Lade Statistiken..." />
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Quick Stats
+        <div className="glass-card-medium p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-3 h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full" />
+            <h2 className="text-xl font-bold text-white">
+              Letzte Aktivitäten
             </h2>
-            {stats ? (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Energy Produced</span>
-                  <span className="font-semibold">{stats.totalEnergyProduced.toFixed(0)} kWh</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Energy Consumed</span>
-                  <span className="font-semibold">{stats.totalEnergyConsumed.toFixed(0)} kWh</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">CO₂ Saved</span>
-                  <span className="font-semibold text-green-600">{stats.totalCO2Saved.toFixed(0)} kg</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Active Alerts</span>
-                  <span className={`font-semibold ${stats.activeAlerts > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                    {stats.activeAlerts}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">System Efficiency</span>
-                  <span className={`font-semibold ${getSystemStatusColor(stats.systemEfficiency)}`}>
-                    {stats.systemEfficiency.toFixed(1)}%
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Connection Status</span>
-                  <span className={`font-semibold ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
-                    {connectionState}
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center text-gray-500">
-                <LoadingSpinner size="sm" text="Loading stats..." />
-              </div>
-            )}
           </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Recent Activity
-            </h2>
-            <div className="space-y-3 max-h-64 overflow-y-auto">
-              {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-3">
-                  <span className="text-lg mt-0.5">{getActivityIcon(activity.type)}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-600 break-words">{activity.message}</p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      {new Date(activity.timestamp).toLocaleTimeString('de-DE')}
-                    </p>
-                  </div>
+          <div className="space-y-3 max-h-64 overflow-y-auto">
+            {recentActivity.map((activity) => (
+              <div key={activity.id} className="flex items-start space-x-3 p-3 bg-white/5 rounded-xl backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                <span className="text-lg mt-0.5">{getActivityIcon(activity.type)}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white break-words font-medium">{activity.message}</p>
+                  <p className="text-xs text-blue-300/60 mt-1">
+                    {new Date(activity.timestamp).toLocaleTimeString('de-DE')}
+                  </p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

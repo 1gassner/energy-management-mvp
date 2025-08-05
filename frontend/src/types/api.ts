@@ -37,6 +37,7 @@ export interface IAPIService {
 export interface IWebSocketService {
   connect(): void;
   disconnect(): void;
+  destroy?(): void; // Optional method for proper cleanup
   subscribe(type: string, callback: (data: unknown) => void): string;
   unsubscribe(id: string): void;
   send(message: WebSocketMessage): void;

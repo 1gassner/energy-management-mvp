@@ -31,32 +31,112 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          ui: ['react-hot-toast', 'lucide-react'],
-          charts: ['recharts'],
-          state: ['zustand']
+        // Aggressive code splitting for better performance
+        manualChunks: (id) => {
+          // React ecosystem - keep together but smaller
+          if (id.includes('react') && !id.includes('recharts')) {
+            return 'vendor-react';
+          }
+          
+          // Charts - split recharts into smaller chunks
+          if (id.includes('recharts')) {
+            // Split recharts by component type
+            if (id.includes('LineChart') || id.includes('Line')) return 'charts-line';
+            if (id.includes('BarChart') || id.includes('Bar')) return 'charts-bar';
+            if (id.includes('PieChart') || id.includes('Pie')) return 'charts-pie';
+            if (id.includes('CartesianGrid') || id.includes('XAxis') || id.includes('YAxis')) return 'charts-axis';
+            if (id.includes('Tooltip') || id.includes('Legend')) return 'charts-tooltip';
+            return 'charts-core';
+          }
+          
+          // UI libraries
+          if (id.includes('lucide-react')) return 'vendor-icons';
+          if (id.includes('zustand')) return 'vendor-state';
+          if (id.includes('clsx') || id.includes('tailwind-merge')) return 'vendor-utils';
+          
+          // Split large pages into separate chunks
+          if (id.includes('/pages/') && !id.includes('node_modules')) {
+            const match = id.match(/pages\/([^\/]+)/);
+            if (match) return `page-${match[1]}`;
+          }
+          
+          // Split components by category
+          if (id.includes('/components/') && !id.includes('node_modules')) {
+            if (id.includes('dashboard')) return 'components-dashboard';
+            if (id.includes('charts')) return 'components-charts';
+            if (id.includes('ui')) return 'components-ui';
+            if (id.includes('layout')) return 'components-layout';
+            return 'components-misc';
+          }
+          
+          // Large node_modules
+          if (id.includes('node_modules')) {
+            if (id.includes('react-router')) return 'vendor-router';
+            if (id.includes('react-hot-toast')) return 'vendor-toast';
+            
+            // Group smaller utilities together
+            return 'vendor-misc';
+          }
+          
+          return undefined;
         },
-        // Optimize chunk names and asset names
+        // Optimize chunk and asset names
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+        // Improve chunking performance
+        experimentalMinChunkSize: 50000, // 50kb minimum chunk size
       }
     },
     target: 'es2020',
     minify: 'esbuild',
-    chunkSizeWarningLimit: 600, // Allow larger chunks for lazy-loaded charts
-    reportCompressedSize: false, // Disable for faster builds
-    cssCodeSplit: true, // Enable CSS code splitting
-    // Optimize dependencies
+    chunkSizeWarningLimit: 300, // Even stricter limit
+    reportCompressedSize: false,
+    cssCodeSplit: true,
+    // CSS optimization
+    cssMinify: 'esbuild',
+    // Advanced optimizations
     commonjsOptions: {
-      esmExternals: true
+      esmExternals: true,
+      include: [/node_modules/],
+      transformMixedEsModules: true
+    },
+    modulePreload: {
+      polyfill: false
+    },
+    // Tree shaking optimization
+    treeshake: {
+      preset: 'recommended',
+      moduleSideEffects: false
     }
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'zustand', 'react-hot-toast'],
-    exclude: ['recharts'] // Exclude recharts from pre-bundling for lazy loading
+    // Pre-bundle only critical dependencies
+    include: [
+      'react',
+      'react-dom',
+      'react-dom/client',
+      'react-router-dom',
+      'zustand',
+      'clsx',
+      'tailwind-merge'
+    ],
+    // Exclude heavy libraries for dynamic loading
+    exclude: [
+      'recharts',
+      'react-hot-toast',
+      'lucide-react'
+    ],
+    // Enable aggressive optimization
+    esbuildOptions: {
+      target: 'es2020',
+      supported: {
+        'top-level-await': true,
+        'import-meta': true
+      },
+      // Tree shake more aggressively
+      treeShaking: true
+    }
   },
   // Enable experimental features for better performance
   esbuild: {

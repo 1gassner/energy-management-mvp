@@ -1,0 +1,105 @@
+{
+  "name": "FlowMind Universal Backend",
+  "description": "Universal Backend for FlowMind AI Chat, Quantum Swarm, Velocity Swarm, and CityPulse Energy Management",
+  "repository": "https://github.com/juergen-gassner/flowmind-universal-backend",
+  "logo": "https://flowmind.app/logo.png",
+  "keywords": ["ai", "chat", "swarm", "energy-management", "universal-backend"],
+  "stack": "heroku-22",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  },
+  "addons": [
+    {
+      "plan": "heroku-postgresql:essential-0",
+      "as": "DATABASE"
+    },
+    {
+      "plan": "heroku-redis:mini",
+      "as": "REDIS"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment mode",
+      "value": "production"
+    },
+    "HOST": {
+      "description": "Server host",
+      "value": "0.0.0.0"
+    },
+    "RATE_LIMITING_ENABLED": {
+      "description": "Enable rate limiting",
+      "value": "true"
+    },
+    "AI_MODELS_ENABLED": {
+      "description": "Enable FlowMind AI Chat",
+      "value": "true"
+    },
+    "CITYPULSE_ENABLED": {
+      "description": "Enable CityPulse Energy Management", 
+      "value": "true"
+    },
+    "QUANTUM_SWARM_ENABLED": {
+      "description": "Enable Quantum Swarm",
+      "value": "true"
+    },
+    "VELOCITY_SWARM_ENABLED": {
+      "description": "Enable Velocity Swarm", 
+      "value": "true"
+    },
+    "WEBSOCKET_ENABLED": {
+      "description": "Enable WebSocket real-time features",
+      "value": "true"
+    },
+    "SUPABASE_URL": {
+      "description": "Supabase project URL",
+      "required": true
+    },
+    "SUPABASE_SERVICE_ROLE_KEY": {
+      "description": "Supabase service role key",
+      "required": true
+    },
+    "JWT_SECRET": {
+      "description": "JWT signing secret",
+      "generator": "secret"
+    },
+    "OPENAI_API_KEY": {
+      "description": "OpenAI API key for AI features",
+      "required": true
+    },
+    "ANTHROPIC_API_KEY": {
+      "description": "Anthropic API key for AI features",
+      "required": true
+    },
+    "GROQ_API_KEY": {
+      "description": "Groq API key for AI features",
+      "required": true
+    },
+    "ALLOWED_ORIGINS": {
+      "description": "Comma-separated list of allowed CORS origins",
+      "value": "https://flowmind.app,https://quantum.flowmind.app,https://velocity.flowmind.app,https://citypulse.flowmind.app"
+    },
+    "LOG_LEVEL": {
+      "description": "Logging level",
+      "value": "info"
+    }
+  },
+  "scripts": {
+    "postdeploy": "cd backend && npm run migrate && npm run seed"
+  },
+  "environments": {
+    "test": {
+      "addons": [
+        "heroku-postgresql:essential-0"
+      ]
+    }
+  }
+}

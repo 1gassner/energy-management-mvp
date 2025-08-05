@@ -30,6 +30,33 @@ export const mockUsers: User[] = [
     createdAt: '2024-01-01T00:00:00Z',
     lastLogin: new Date().toISOString(),
   },
+  {
+    id: '4',
+    email: 'buergermeister@citypulse.com',
+    name: 'Bürgermeister Dr. Philipp Hahn',
+    role: 'buergermeister',
+    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&h=100&fit=crop&crop=face',
+    createdAt: '2024-01-01T00:00:00Z',
+    lastLogin: new Date().toISOString(),
+  },
+  {
+    id: '5',
+    email: 'gebaeude.manager@citypulse.com',
+    name: 'Klaus Fischer',
+    role: 'gebaeudemanager',
+    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop&crop=face',
+    createdAt: '2024-01-01T00:00:00Z',
+    lastLogin: new Date().toISOString(),
+  },
+  {
+    id: '6',
+    email: 'buerger@citypulse.com',
+    name: 'Max Mustermann',
+    role: 'buerger',
+    avatar: 'https://images.unsplash.com/photo-1463453091185-61582044d556?w=100&h=100&fit=crop&crop=face',
+    createdAt: '2024-01-01T00:00:00Z',
+    lastLogin: new Date().toISOString(),
+  },
 ];
 
 // Mock Buildings - Stadt Hechingen (alle 7 Gebäude)
@@ -496,6 +523,80 @@ export const mockSensors: Sensor[] = [
   },
 ];
 
+// Generate additional sensors to reach 745 total sensors for realistic admin interface
+const generateAdditionalSensors = (): Sensor[] => {
+  const additionalSensors: Sensor[] = [];
+  const sensorTypes = ['temperature', 'humidity', 'energy', 'occupancy', 'security', 'environment'];
+  
+  mockBuildings.forEach(building => {
+    // Add 100+ sensors per building to simulate realistic sensor density
+    for (let i = 1; i <= 100; i++) {
+      const sensorType = sensorTypes[Math.floor(Math.random() * sensorTypes.length)] as any;
+      const baseValue = Math.random() * 100;
+      
+      additionalSensors.push({
+        id: `${building.id}-sensor-${i}`,
+        buildingId: building.id,
+        type: sensorType,
+        name: `${getSensorTypeName(sensorType)} ${i}`,
+        value: Math.round(baseValue * 100) / 100,
+        unit: getSensorUnit(sensorType),
+        status: Math.random() > 0.05 ? 'active' : (Math.random() > 0.5 ? 'inactive' : 'error'),
+        lastReading: new Date(Date.now() - Math.random() * 86400000).toISOString(), // Random time in last 24h
+        metadata: {
+          location: `${getRandomLocation()} ${i}`,
+          critical: Math.random() > 0.8,
+          alertThreshold: Math.random() > 0.7 ? baseValue * 1.2 : undefined,
+          description: `Automatisch generierter ${getSensorTypeName(sensorType)} Sensor`
+        }
+      });
+    }
+  });
+  
+  return additionalSensors;
+};
+
+const getSensorTypeName = (type: string): string => {
+  const typeNames: Record<string, string> = {
+    temperature: 'Temperatursensor',
+    humidity: 'Luftfeuchtigkeit',
+    energy: 'Energiezähler',
+    occupancy: 'Belegungssensor',
+    security: 'Sicherheitssensor',
+    environment: 'Umweltsensor'
+  };
+  return typeNames[type] || 'Sensor';
+};
+
+const getSensorUnit = (type: string): string => {
+  const units: Record<string, string> = {
+    temperature: '°C',
+    humidity: '%',
+    energy: 'kWh',
+    occupancy: '%',
+    security: 'Status',
+    environment: 'Index'
+  };
+  return units[type] || 'Unit';
+};
+
+const getRandomLocation = (): string => {
+  const locations = [
+    'Erdgeschoss', 'Obergeschoss', 'Keller', 'Dachgeschoss', 
+    'Haupteingang', 'Nebeneingang', 'Flur', 'Treppenhaus',
+    'Büro', 'Klassenraum', 'Verwaltung', 'Technikraum'
+  ];
+  return locations[Math.floor(Math.random() * locations.length)];
+};
+
+// Combine original sensors with generated ones to reach 745+ total
+export const allMockSensors: Sensor[] = [
+  ...mockSensors,
+  ...generateAdditionalSensors()
+];
+
+// Original mockSensors are already exported above
+
 // Generate Mock Energy Data
 export const generateMockEnergyData = (buildingId?: string, days: number = 7): EnergyData[] => {
   const data: EnergyData[] = [];
@@ -726,6 +827,9 @@ export const mockCredentials = {
   admin: { email: 'admin@citypulse.com', password: 'admin123' },
   manager: { email: 'manager@citypulse.com', password: 'manager123' },
   user: { email: 'user@citypulse.com', password: 'user123' },
+  buergermeister: { email: 'buergermeister@citypulse.com', password: 'citypulse123' },
+  gebaeudemanager: { email: 'gebaeude.manager@citypulse.com', password: 'citypulse123' },
+  buerger: { email: 'buerger@citypulse.com', password: 'citypulse123' },
 };
 
 // Update sensors in buildings

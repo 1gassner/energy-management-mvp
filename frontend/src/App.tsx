@@ -17,13 +17,20 @@ function App() {
     const initializeApp = async () => {
       try {
         await initialize();
+        
+        // Auto-login for demo mode
+        if (import.meta.env.VITE_DEMO_MODE === 'true' && !isAuthenticated) {
+          logger.info('Demo mode: Auto-logging in as admin user');
+          const { login } = useAuthStore.getState();
+          await login({ email: 'admin@hechingen.de', password: 'demo123' });
+        }
       } catch (error) {
         logger.error('Failed to initialize user session', error as Error);
       }
     };
 
     initializeApp();
-  }, [initialize]);
+  }, [initialize, isAuthenticated]);
 
   // Manage WebSocket connection based on authentication
   useEffect(() => {
