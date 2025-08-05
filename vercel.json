@@ -33,7 +33,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://energy-management-mvp.vercel.app wss://energy-management-mvp.vercel.app https://www.google-analytics.com; worker-src 'self' blob:; child-src 'self' blob:;"
+          "value": "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; script-src-elem * 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src * 'unsafe-inline' https://fonts.googleapis.com; style-src-elem * 'unsafe-inline' https://fonts.googleapis.com; img-src * data: blob:; font-src * data: https://fonts.gstatic.com; connect-src * wss: ws: data: blob:; worker-src * blob: data:; child-src * blob: data:; frame-src * data: blob:; object-src *; media-src * data: blob:; manifest-src *; base-uri 'self' *;"
         }
       ]
     }
