@@ -88,5 +88,7 @@
       "destination": "/index.html"
     }
   ],
-  "regions": ["fra1"]
+  "regions": ["fra1"],
+  "cleanUrls": false,
+  "trailingSlash": false
 }
