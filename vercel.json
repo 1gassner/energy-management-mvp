@@ -100,5 +100,5 @@
   "regions": ["fra1"],
   "cleanUrls": false,
   "trailingSlash": false,
-  "buildComment": "Fix React hooks - single vendor bundle v2"
+  "buildComment": "FORCE REDEPLOY - Single bundle build v3"
 }
