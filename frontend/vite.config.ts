@@ -31,77 +31,48 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        // Aggressive code splitting for better performance
-        manualChunks: (id) => {
-          // React ecosystem - keep together but smaller
-          if (id.includes('react') && !id.includes('recharts')) {
-            return 'vendor-react';
-          }
-          
-          // Charts - keep recharts together to prevent module loading issues
-          if (id.includes('recharts')) {
-            return 'vendor-recharts'; // Single chunk for all recharts to fix PureComponent error
-          }
-          
-          // UI libraries
-          if (id.includes('lucide-react')) return 'vendor-icons';
-          if (id.includes('zustand')) return 'vendor-state';
-          if (id.includes('clsx') || id.includes('tailwind-merge')) return 'vendor-utils';
-          
-          // Split large pages into separate chunks
-          if (id.includes('/pages/') && !id.includes('node_modules')) {
-            const match = id.match(/pages\/([^\/]+)/);
-            if (match) return `page-${match[1]}`;
-          }
-          
-          // Split components by category
-          if (id.includes('/components/') && !id.includes('node_modules')) {
-            if (id.includes('dashboard')) return 'components-dashboard';
-            if (id.includes('charts')) return 'components-charts';
-            if (id.includes('ui')) return 'components-ui';
-            if (id.includes('layout')) return 'components-layout';
-            return 'components-misc';
-          }
-          
-          // Large node_modules
-          if (id.includes('node_modules')) {
-            if (id.includes('react-router')) return 'vendor-router';
-            if (id.includes('react-hot-toast')) return 'vendor-toast';
-            
-            // Group smaller utilities together
-            return 'vendor-misc';
-          }
-          
-          return undefined;
+        // Simplified chunking strategy to avoid dynamic import issues
+        manualChunks: {
+          // Core vendor chunks - always loaded
+          'vendor': [
+            'react',
+            'react-dom',
+            'react-router-dom'
+          ],
+          // Charts library - separate bundle
+          'charts': [
+            'recharts'
+          ],
+          // UI utilities
+          'ui': [
+            'lucide-react',
+            'clsx',
+            'tailwind-merge'
+          ],
+          // State management
+          'state': [
+            'zustand'
+          ]
         },
         // Optimize chunk and asset names
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
-        // Improve chunking performance
-        experimentalMinChunkSize: 50000, // 50kb minimum chunk size
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
       }
     },
     target: 'es2020',
     minify: 'esbuild',
-    chunkSizeWarningLimit: 300, // Even stricter limit
+    chunkSizeWarningLimit: 500, // Increased for vendor bundles
     reportCompressedSize: false,
-    cssCodeSplit: true,
+    cssCodeSplit: false, // Single CSS file to avoid loading issues
     // CSS optimization
     cssMinify: 'esbuild',
-    // Advanced optimizations
+    // Simplified optimizations to avoid module issues
     commonjsOptions: {
-      esmExternals: true,
-      include: [/node_modules/],
-      transformMixedEsModules: true
+      include: [/node_modules/]
     },
     modulePreload: {
-      polyfill: false
-    },
-    // Tree shaking optimization
-    treeshake: {
-      preset: 'recommended',
-      moduleSideEffects: false
+      polyfill: true // Enable polyfill for better compatibility
     }
   },
   optimizeDeps: {

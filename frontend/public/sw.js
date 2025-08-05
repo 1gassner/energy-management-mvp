@@ -33,11 +33,14 @@ const CACHEABLE_API_PATTERNS = [
   /\/api\/analytics\/\w+/
 ];
 
-// Dynamic import patterns
+// Dynamic import patterns - handle module loading
 const DYNAMIC_IMPORT_PATTERNS = [
   /\/assets\/js\//,
   /\/assets\/css\//,
-  /\/assets\/images\//
+  /\/assets\/images\//,
+  /\.js$/,
+  /\.mjs$/,
+  /\.css$/
 ];
 
 // Initialize service worker
@@ -164,12 +167,25 @@ async function cacheFirst(request, cacheName) {
   return networkResponse;
 }
 
-// Network-first strategy
+// Network-first strategy with module handling
 async function networkFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   
   try {
     const networkResponse = await fetch(request);
+    
+    // Check for HTML responses to JS requests (404 fallback issue)
+    if (request.url.includes('.js') && 
+        networkResponse.headers.get('content-type')?.includes('text/html')) {
+      console.warn('Service Worker: JS request returned HTML, likely 404:', request.url);
+      // Try cache or skip caching this response
+      const cachedResponse = await cache.match(request);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      // Don't cache HTML responses for JS files
+      return networkResponse;
+    }
     
     if (networkResponse.ok) {
       // Cache successful responses
