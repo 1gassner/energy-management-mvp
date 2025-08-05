@@ -51,13 +51,8 @@
     <link rel="dns-prefetch" href="//api.citypulse-hechingen.de" />
     <!-- Removed problematic data URL modulepreload that causes MIME type errors -->
     
-    <!-- Enhanced Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' wss: https:; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; worker-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;" />
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
-    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
-    <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), location=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), geolocation=()" />
+    <!-- Security Headers - Removed from HTML as they're set via Vercel HTTP Headers -->
+    <!-- CSP, X-Frame-Options etc. are configured in vercel.json for proper HTTP header delivery -->
     
     <!-- Critical CSS Inline (will be added by build process) -->
     <style>
