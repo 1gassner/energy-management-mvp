@@ -31,28 +31,19 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        // Single vendor bundle to ensure React loads properly
-        manualChunks(id) {
-          // Everything from node_modules goes into vendor bundle
-          // This ensures React is available for all other modules
-          if (id.includes('node_modules')) {
-            // Recharts is huge, keep it separate
-            if (id.includes('recharts')) {
-              return 'charts';
-            }
-            // All other dependencies in one vendor bundle
-            return 'vendor';
-          }
-        },
-        // Optimize chunk and asset names
+        // DISABLE ALL CODE SPLITTING - Single bundle only
+        manualChunks: undefined, // Disable manual chunks
+        // Single file names
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+        // Disable dynamic imports
+        inlineDynamicImports: true
       }
     },
     target: 'es2020',
     minify: 'esbuild',
-    chunkSizeWarningLimit: 500, // Increased for vendor bundles
+    chunkSizeWarningLimit: 2000, // Increased for single bundle
     reportCompressedSize: false,
     cssCodeSplit: false, // Single CSS file to avoid loading issues
     // CSS optimization

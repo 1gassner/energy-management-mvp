@@ -1,7 +1,7 @@
 // Service Worker for CityPulse Hechingen PWA
 // Provides offline functionality, caching, and performance optimization
 
-const CACHE_NAME = 'citypulse-hechingen-v1.0.1'; // Version bump to force cache clear
+const CACHE_NAME = 'citypulse-hechingen-v1.0.2'; // Version bump to force cache clear
 const STATIC_CACHE = `${CACHE_NAME}-static`;
 const DYNAMIC_CACHE = `${CACHE_NAME}-dynamic`;
 const IMAGE_CACHE = `${CACHE_NAME}-images`;
@@ -74,7 +74,7 @@ self.addEventListener('activate', (event) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName.startsWith('citypulse-hechingen-') && 
-                !cacheName.includes('v1.0.1')) {
+                !cacheName.includes('v1.0.2')) {
               console.log('Service Worker: Deleting old cache', cacheName);
               return caches.delete(cacheName);
             }
