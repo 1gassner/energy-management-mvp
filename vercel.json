@@ -99,5 +99,6 @@
   ],
   "regions": ["fra1"],
   "cleanUrls": false,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "buildComment": "Fix React hooks - single vendor bundle v2"
 }
