@@ -21,7 +21,8 @@ import {
   Globe,
   Activity,
   Timer,
-  Compass
+  Compass,
+  Cloud
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
@@ -47,6 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     { name: 'Dashboard', href: '/dashboard', icon: Home },
     { name: 'Energiefluss', href: '/energy-flow', icon: Zap },
     { name: 'Hechingen', href: '/hechingen', icon: Building2 },
+    { name: 'Wetter', href: '/weather', icon: Cloud, notification: true },
     { name: 'Alerts', href: '/alerts', icon: AlertTriangle },
     { name: 'Analytics', href: '/analytics', icon: BarChart3, requiresManager: true },
     { name: 'Optimierung', href: '/optimization', icon: TrendingUp, requiresManager: true },

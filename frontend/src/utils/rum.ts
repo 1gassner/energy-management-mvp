@@ -3,11 +3,11 @@
  * Tracks Core Web Vitals and custom performance metrics
  */
 
-import { getCLS, getFID, getFCP, getLCP, getTTFB, Metric } from 'web-vitals';
+import { onCLS, onINP, onFCP, onLCP, onTTFB, Metric } from 'web-vitals';
 
 export interface PerformanceMetrics {
   cls?: number;
-  fid?: number;
+  inp?: number;
   fcp?: number;
   lcp?: number;
   ttfb?: number;
@@ -30,11 +30,11 @@ class RealUserMonitoring {
 
   private initializeWebVitals() {
     // Core Web Vitals
-    getCLS(this.handleMetric('cls'));
-    getFID(this.handleMetric('fid'));
-    getFCP(this.handleMetric('fcp'));
-    getLCP(this.handleMetric('lcp'));
-    getTTFB(this.handleMetric('ttfb'));
+    onCLS(this.handleMetric('cls'));
+    onINP(this.handleMetric('inp'));
+    onFCP(this.handleMetric('fcp'));
+    onLCP(this.handleMetric('lcp'));
+    onTTFB(this.handleMetric('ttfb'));
 
     // Custom performance marks
     this.observePerformance();

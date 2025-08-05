@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/react';
 import { CaptureConsole } from '@sentry/integrations';
 
 export const initSentry = () => {
@@ -8,12 +7,6 @@ export const initSentry = () => {
       dsn: import.meta.env.VITE_SENTRY_DSN || '',
       environment: import.meta.env.VITE_APP_ENV || 'production',
       integrations: [
-        new BrowserTracing({
-          routingInstrumentation: Sentry.reactRouterV6Instrumentation(
-            window.history
-          ),
-          tracingOrigins: ['localhost', /^\//],
-        }),
         new CaptureConsole({
           levels: ['error', 'warn']
         })

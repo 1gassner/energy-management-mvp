@@ -55,6 +55,9 @@ const BudgetManagement = lazy(() => import('@/pages/finance/BudgetManagement'));
 // Planning Components
 const MobileAppPlan = lazy(() => import('@/pages/planning/MobileAppPlan'));
 
+// Weather Components
+const WeatherAnalytics = lazy(() => import('@/pages/weather/WeatherAnalytics'));
+
 // System Components
 const HealthCheck = lazy(() => import('@/components/HealthCheck'));
 
@@ -244,6 +247,13 @@ const Router: React.FC = () => {
             <AIAnalyticsDashboard />
           </Suspense>
         </ProtectedRoute>
+      } />
+
+      {/* Weather Analytics Route */}
+      <Route path="/weather" element={
+        <Suspense fallback={<LoadingSpinner />}>
+          <WeatherAnalytics />
+        </Suspense>
       } />
 
       {/* Admin Routes */}
