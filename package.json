@@ -1,0 +1,33 @@
+{
+  "name": "energy-management-mvp",
+  "version": "1.0.0",
+  "description": "CityPulse Energy Management MVP - Smart City System with 745 sensors across 7 buildings in Hechingen",
+  "main": "backend/src/server.js",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "install": "cd backend && npm install",
+    "build": "cd backend && npm run build",
+    "test": "cd backend && npm test"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "energy-management",
+    "smart-city",
+    "citypulse",
+    "iot",
+    "sensors",
+    "hechingen",
+    "railway",
+    "nodejs"
+  ],
+  "author": "Jürgen Gassner",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1gassner/energy-management-mvp.git"
+  }
+}
