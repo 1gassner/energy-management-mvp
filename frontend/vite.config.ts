@@ -31,29 +31,16 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        // Fixed chunking to prevent React hook errors
+        // Single vendor bundle to ensure React loads properly
         manualChunks(id) {
-          // CRITICAL: React must be in vendor chunk and loaded first
+          // Everything from node_modules goes into vendor bundle
+          // This ensures React is available for all other modules
           if (id.includes('node_modules')) {
-            if (id.includes('react-dom')) {
-              return 'react-dom';
-            }
-            if (id.includes('react') && !id.includes('recharts')) {
-              return 'react';
-            }
+            // Recharts is huge, keep it separate
             if (id.includes('recharts')) {
               return 'charts';
             }
-            if (id.includes('lucide-react')) {
-              return 'icons';
-            }
-            if (id.includes('zustand')) {
-              return 'state';
-            }
-            if (id.includes('react-router')) {
-              return 'router';
-            }
-            // All other node_modules in vendor
+            // All other dependencies in one vendor bundle
             return 'vendor';
           }
         },
