@@ -1,0 +1,13 @@
+# Vercel ignore file to force clean builds
+node_modules/.vite
+dist
+.vite
+coverage
+*.log
+.DS_Store
+.env.local
+.env.production.local
+.env.development.local
+.env.test.local
+src/**/*.test.*
+src/**/*.spec.*

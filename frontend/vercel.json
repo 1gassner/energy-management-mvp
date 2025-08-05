@@ -4,13 +4,14 @@
   "outputDirectory": "dist",
   "installCommand": "npm ci",
   "env": {
+    "NODE_ENV": "production",
     "VITE_USE_MOCK_DATA": "true",
     "VITE_APP_ENV": "demo",
     "VITE_MOCK_DELAY": "300",
     "VITE_MOCK_FAILURE_RATE": "0",
     "VITE_WS_ENABLED": "false",
     "VITE_LOG_LEVEL": "warn",
-   "VITE_ENABLE_AI_FEATURES": "true",
+    "VITE_ENABLE_AI_FEATURES": "true",
     "VITE_ENABLE_ANALYTICS": "false",
     "VITE_DEMO_MODE": "true"
   },

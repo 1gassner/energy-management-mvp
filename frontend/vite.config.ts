@@ -29,14 +29,27 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
+    emptyOutDir: true, // Force clean build
     rollupOptions: {
       output: {
         // DISABLE ALL CODE SPLITTING - Single bundle only
         manualChunks: undefined, // Disable manual chunks
-        // Single file names
-        chunkFileNames: 'assets/js/[name]-[hash].js',
-        entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+        // Single file names with more aggressive cache busting
+        chunkFileNames: (chunkInfo) => {
+          return `assets/js/${chunkInfo.name}-[hash].js`;
+        },
+        entryFileNames: `assets/js/index-[hash].js`,
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name!.split('.');
+          const ext = info[info.length - 1];
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+            return `assets/img/[name]-[hash].[ext]`;
+          }
+          if (ext === 'css') {
+            return `assets/css/style-[hash].[ext]`;
+          }
+          return `assets/[ext]/[name]-[hash].[ext]`;
+        },
         // Disable dynamic imports
         inlineDynamicImports: true
       }
@@ -50,7 +63,8 @@ export default defineConfig({
     cssMinify: 'esbuild',
     // Simplified optimizations to avoid module issues
     commonjsOptions: {
-      include: [/node_modules/]
+      include: [/node_modules/],
+      transformMixedEsModules: true
     },
     modulePreload: {
       polyfill: true // Enable polyfill for better compatibility
