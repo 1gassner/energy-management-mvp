@@ -1,16 +1,29 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import * as Sentry from '@sentry/react';
 import Router from './Router';
 import Layout from './components/layout/Layout';
 import ErrorBoundary from './components/ErrorBoundary';
 import MockDataToggle from './components/dev/MockDataToggle';
+import SkipNavigation from './components/accessibility/SkipNavigation';
 import { useAuthStore } from './stores/authStore';
 import { websocketService } from './services/websocket.service';
 import { logger } from './utils/logger';
+import { initSentry, setUser, clearUser } from './utils/sentry';
+import { featureFlags } from './utils/featureFlags';
+import { rum } from './utils/rum';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 
-function App() {
+// Initialize Sentry error tracking
+initSentry();
+
+// Enhanced App with Sentry error boundaries
+const EnhancedApp = Sentry.withProfiler(function App() {
   const { user, isAuthenticated, initialize } = useAuthStore();
+  
+  // Initialize keyboard shortcuts
+  useKeyboardShortcuts();
 
   // Initialize user session on app start
   useEffect(() => {
@@ -32,16 +45,28 @@ function App() {
     initializeApp();
   }, [initialize, isAuthenticated]);
 
-  // Manage WebSocket connection based on authentication
+  // Manage WebSocket connection and user tracking
   useEffect(() => {
     if (isAuthenticated && user) {
       // Connect WebSocket when user is authenticated
       logger.info('User authenticated, connecting WebSocket', { userId: user?.id });
       websocketService.connect();
+      
+      // Set user for Sentry error tracking
+      setUser({ id: user.id, email: user.email });
+      
+      // Set user for feature flags
+      featureFlags.setUser(user.id, user.role);
+      
+      // Track user login
+      rum.trackUserInteraction('login', 'auth', 1);
     } else {
       // Disconnect WebSocket when user logs out
       logger.info('User not authenticated, disconnecting WebSocket');
       websocketService.disconnect();
+      
+      // Clear user tracking
+      clearUser();
     }
 
     // Cleanup on unmount
@@ -74,8 +99,11 @@ function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        <SkipNavigation />
         <Layout>
-          <Router />
+          <main id="main-content" tabIndex={-1}>
+            <Router />
+          </main>
           <Toaster 
             position="top-right"
             toastOptions={{
@@ -115,6 +143,6 @@ function App() {
       </BrowserRouter>
     </ErrorBoundary>
   );
-}
+});
 
-export default App;
+export default EnhancedApp;
