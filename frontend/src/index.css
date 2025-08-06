@@ -6,8 +6,12 @@
 @import './styles/z-index-scale.css';
 /* Import performance-optimized animations */
 @import './styles/performance-animations.css';
+/* Import modern animations */
+@import './styles/modern-animations.css';
 /* Import mobile optimizations */
 @import './styles/mobile-optimizations.css';
+/* Import enhanced mobile styles */
+@import './styles/mobile-enhanced.css';
 
 @tailwind base;
 @tailwind components;

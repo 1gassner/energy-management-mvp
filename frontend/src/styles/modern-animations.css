@@ -1,0 +1,517 @@
+/* ========================================
+   MODERN ANIMATIONS & KEYFRAMES
+   Premium SaaS-grade animations with 60fps performance
+   ======================================== */
+
+/* === MODERN ANIMATION VARIABLES === */
+:root {
+  /* Premium easing curves */
+  --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-back: cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  --ease-power: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-circ: cubic-bezier(0.075, 0.82, 0.165, 1);
+  
+  /* Premium timing */
+  --timing-micro: 0.1s;
+  --timing-fast: 0.15s;
+  --timing-base: 0.25s;
+  --timing-slow: 0.35s;
+  --timing-slower: 0.5s;
+  --timing-slowest: 0.75s;
+  
+  /* Modern blur values */
+  --blur-xs: blur(2px);
+  --blur-sm: blur(4px);
+  --blur-md: blur(8px);
+  --blur-lg: blur(16px);
+  --blur-xl: blur(24px);
+  --blur-2xl: blur(32px);
+  --blur-3xl: blur(48px);
+  
+  /* Modern shadow system */
+  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
+  --shadow-glow-green: 0 0 20px rgba(34, 197, 94, 0.3);
+  --shadow-glow-purple: 0 0 20px rgba(147, 51, 234, 0.3);
+  --shadow-premium: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --shadow-float: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* === PREMIUM GRADIENT BACKGROUNDS === */
+.bg-gradient-aurora {
+  background: linear-gradient(135deg,
+    #667eea 0%,
+    #764ba2 25%,
+    #f093fb 50%,
+    #f5576c 75%,
+    #4facfe 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+.bg-gradient-energy {
+  background: linear-gradient(135deg,
+    #a8edea 0%,
+    #fed6e3 100%);
+}
+
+.bg-gradient-cyber {
+  background: linear-gradient(135deg,
+    #0f0c29 0%,
+    #302b63 50%,
+    #24243e 100%);
+}
+
+.bg-gradient-glass {
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: var(--blur-lg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* === MODERN KEYFRAME ANIMATIONS === */
+
+/* Smooth entrance animations */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideRightFade {
+  from {
+    opacity: 0;
+    transform: translate3d(-30px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes scaleUpFade {
+  from {
+    opacity: 0;
+    transform: scale3d(0.8, 0.8, 1);
+  }
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale3d(1.05, 1.05, 1);
+  }
+  70% {
+    transform: scale3d(0.95, 0.95, 1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+/* Floating animation for cards */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Pulsing glow effect */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), 0 0 30px rgba(59, 130, 246, 0.2);
+  }
+}
+
+/* Shimmer loading effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Gradient animation */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Ripple effect */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Success checkmark animation */
+@keyframes checkmark {
+  0% {
+    stroke-dasharray: 0 50;
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dasharray: 50 50;
+    stroke-dashoffset: -50;
+  }
+}
+
+/* Error shake animation */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
+}
+
+/* Morphing loader */
+@keyframes morph {
+  0% {
+    border-radius: 0;
+  }
+  50% {
+    border-radius: 50%;
+  }
+  100% {
+    border-radius: 0;
+  }
+}
+
+/* === MODERN UTILITY CLASSES === */
+
+/* Entrance animations */
+.animate-slide-up-fade {
+  animation: slideUpFade var(--timing-base) var(--ease-power) forwards;
+}
+
+.animate-slide-right-fade {
+  animation: slideRightFade var(--timing-base) var(--ease-power) forwards;
+}
+
+.animate-scale-up-fade {
+  animation: scaleUpFade var(--timing-base) var(--ease-back) forwards;
+}
+
+.animate-bounce-in {
+  animation: bounceIn var(--timing-slower) var(--ease-elastic) forwards;
+}
+
+/* Continuous animations */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.animate-gradient {
+  animation: gradientShift 6s ease infinite;
+}
+
+/* State animations */
+.animate-shake {
+  animation: shake 0.6s ease-in-out;
+}
+
+.animate-success {
+  animation: bounceIn 0.6s var(--ease-back);
+}
+
+/* === HOVER & INTERACTION EFFECTS === */
+.hover-lift {
+  transition: all var(--timing-fast) var(--ease-power);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-float);
+}
+
+.hover-glow {
+  transition: all var(--timing-base) var(--ease-power);
+}
+
+.hover-glow:hover {
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+.hover-scale {
+  transition: transform var(--timing-fast) var(--ease-power);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-tilt {
+  transition: transform var(--timing-base) var(--ease-power);
+  transform-style: preserve-3d;
+}
+
+.hover-tilt:hover {
+  transform: rotateX(5deg) rotateY(5deg) translateZ(10px);
+}
+
+/* === LOADING STATES === */
+.skeleton-modern {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+.loading-dots {
+  display: inline-block;
+}
+
+.loading-dots::after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+    color: transparent;
+    text-shadow: 0.25em 0 0 transparent, 0.5em 0 0 transparent;
+  }
+  40% {
+    color: currentColor;
+    text-shadow: 0.25em 0 0 transparent, 0.5em 0 0 transparent;
+  }
+  60% {
+    text-shadow: 0.25em 0 0 currentColor, 0.5em 0 0 transparent;
+  }
+  80%, 100% {
+    text-shadow: 0.25em 0 0 currentColor, 0.5em 0 0 currentColor;
+  }
+}
+
+/* === GLASSMORPHISM EFFECTS === */
+.glass-premium {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: var(--blur-lg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 
+    0 8px 32px rgba(31, 38, 135, 0.37),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-card-modern {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  backdrop-filter: var(--blur-lg);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card-modern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+}
+
+/* === MICRO-INTERACTIONS === */
+.btn-micro {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--timing-fast) var(--ease-power);
+}
+
+.btn-micro::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.btn-micro:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* === SUCCESS/ERROR STATES === */
+.success-check {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: checkmark 0.6s var(--ease-power) forwards;
+}
+
+.error-x {
+  animation: shake 0.6s ease-in-out;
+}
+
+/* === PARALLAX EFFECTS === */
+.parallax-slow {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.parallax-medium {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.parallax-fast {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* === PAGE TRANSITIONS === */
+.page-enter {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition: opacity var(--timing-base) var(--ease-power),
+              transform var(--timing-base) var(--ease-power);
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translate3d(0, -20px, 0);
+  transition: opacity var(--timing-fast) var(--ease-power),
+              transform var(--timing-fast) var(--ease-power);
+}
+
+/* === DARK MODE SPECIFIC === */
+@media (prefers-color-scheme: dark) {
+  .glass-premium {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .glass-card-modern {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.05) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-float,
+  .animate-glow-pulse,
+  .animate-shimmer,
+  .animate-gradient {
+    animation: none !important;
+  }
+}
+
+/* === PERFORMANCE OPTIMIZATIONS === */
+.gpu-layer {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.animate-gpu {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Contain paint for better performance */
+.contain-paint {
+  contain: layout style paint;
+}
