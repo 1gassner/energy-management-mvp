@@ -32,22 +32,15 @@ export default defineConfig({
     emptyOutDir: true, // Force clean build
     rollupOptions: {
       output: {
-        // OPTIMIZED CODE SPLITTING for better performance
+        // Simplified chunking to fix module loading issues
         manualChunks: (id) => {
-          // Vendor splitting for better caching
+          // Keep React in main vendor bundle to avoid hook issues
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
-            }
-            if (id.includes('recharts')) {
+            // Charts are heavy, keep them separate
+            if (id.includes('recharts') || id.includes('d3-') || id.includes('victory')) {
               return 'charts';
             }
-            if (id.includes('lucide-react')) {
-              return 'icons';
-            }
-            if (id.includes('zustand')) {
-              return 'state';
-            }
+            // All other vendor code in one bundle
             return 'vendor';
           }
           // Split by feature
