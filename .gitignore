@@ -56,3 +56,7 @@ ssl/
 # Build artifacts
 *.tsbuildinfo
 .vercel
+
+# Production Secrets (NEVER COMMIT)
+secrets/
+.env.production*
